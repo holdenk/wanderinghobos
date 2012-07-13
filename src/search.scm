@@ -1,5 +1,7 @@
 (declare (unit search))
 
+(require-library pairing-heap)
+
 (define (a* world steps heur score)
 	(cond
 	 ((= 0 steps) '(0 0 0 0))
