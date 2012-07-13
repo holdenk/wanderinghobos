@@ -23,6 +23,20 @@
 
 (define (map-matrix f m) (map-vector (lambda (v) (map-vector f v)) m))
 
+(define (map-indexed-matrix f m)
+ (map-indexed-vector (lambda (r i) (map-indexed-vector (lambda (c j) (f c j i)) r)) m))
+
+(define (map-indexed-vector f v)
+ ;; needs work: Won't work correctly when F is nondeterministic.
+ (let ((u (make-vector (vector-length v))))
+  (for-each-n
+   (lambda (i)
+    (vector-set!
+     u i
+     (f (vector-ref v i) i)))
+   (vector-length v))
+  u))
+
 (define (reverse-vector v) (list->vector (reverse (vector->list v))))
 
 (define (for-each-board-index f board)
