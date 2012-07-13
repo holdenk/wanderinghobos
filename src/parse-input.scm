@@ -57,7 +57,7 @@
   ((hug) #\\)
   (else (display symbol)(newline)(error "bad world"))))
 
-(define (world-pp world)
+(define (world-pp port world)
  (vector-for-each (lambda (i l)
                    (vector-for-each (lambda (i l2) (display (symbol-to-char l2))) l)
                    (display "\n"))
@@ -108,3 +108,20 @@
 )
 
 (define (string->world string) (call-with-input-string string parse-input))
+
+(define-record-printer (world world port)
+ (begin
+  (vector-for-each (lambda (i l)
+                    (vector-for-each (lambda (i l2) (display (symbol-to-char l2) port)) l)
+                    (display "\n" port))
+                   (world-board world))
+  (display (format port
+                   "Water ~A\nFlooding ~A\nWaterproof ~A\nIteration ~A\nRocks ~A\n"
+                   (world-water world)
+                   (world-flooding world)
+                   (world-waterproof world)
+                   (world-iteration world)
+                   (world-rocks world)))
+  ))
+
+
