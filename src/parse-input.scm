@@ -44,20 +44,30 @@
 
 (define-gs-record world board water flooding waterproof underwater iteration rocks)
 
+(define (symbol-to-char symbol)
+ (case symbol
+  ((robot) #\R)
+  ((wall) #\#)
+  ((rock) #\*)
+  ((hug) #\\)
+  ((closed-lift) #\L)
+  ((open-lift) #\O)
+  ((earth) #\.)
+  ((empty) #\space)
+  ((hug) #\\)
+  (else (display symbol)(newline)(error "bad world"))))
+
 (define (world-pp world)
-  (vector-for-each (lambda (i l)
-		     (vector-for-each (lambda (i l2)
-				      (display l2)
-				      ) l)
-		     (display "\n")
-		     )
-	      (world-board world)
-	      )
-  (display (format "Water ~A\nFlooding ~A\nWaterproof ~A\n"
-		   (world-water world)
-		   (world-flooding world)
-		   (world-waterproof world)))
-)
+ (vector-for-each (lambda (i l)
+                   (vector-for-each (lambda (i l2) (display (symbol-to-char l2))) l)
+                   (display "\n"))
+                  (world-board world))
+ (display (format "Water ~A\nFlooding ~A\nWaterproof ~A\nIteration ~A\nRocks ~A\n"
+                  (world-water world)
+                  (world-flooding world)
+                  (world-waterproof world)
+                  (world-iteration world)
+                  (world-rocks world))))
 
 (define (parse-input)
   (define (convert-to-symbol char)
