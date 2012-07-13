@@ -1,5 +1,8 @@
-(use test srfi-1 posix parse-input)
 (declare (unit simulate))
+
+(declare (uses parse-input))
+
+(use test srfi-1 posix)
 
 (define (for-each-n f n)
  (let loop ((i 0)) (when (< i n) (f i) (loop (+ i 1)))))
