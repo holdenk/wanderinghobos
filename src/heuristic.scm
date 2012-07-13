@@ -6,7 +6,8 @@
 (define (score-world world)
   (define HUGCOST 10000)
   (define MANHATTANDISTCOST 10)
-  (define DEATHCOST 200000)
+  (define DEATHCOST +inf.0);;We don't want to die unless we abort, abortions are FREE
+  ;;Also they give you a lolipop after! OMG Ponies
  (+ (* HUGCOST (count-hugs world))
      (* MANHATTANDISTCOST (manhattan-dist-to-hug world))
      (* DEATHCOST (i-am-dead? world))
@@ -34,6 +35,15 @@
        (robot (find-robot world))
        (hugs (find-hugs world))
       )
-      (list 1 2)
+    (fold (lambda (hug currentdist) (if (eq? currentdist 0)
+					(mdist robot hug)
+					(min currentdist (mdist robot hug))
+					)) 0 hugs)
       )
   )
+
+(define (mdist a b)
+  (+ (abs (- (car a) (car b)))
+   (abs (- (cadr a) (cadr b)))
+   )
+)

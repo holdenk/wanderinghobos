@@ -1,39 +1,46 @@
 (declare (unit search))
+(use srfi-1)
+(require-library simulate pairing-heap)
 
-(require-library pairing-heap)
+(define moves '(left right up down wait))
 
-(define (a* world steps heur score)
-	(cond
-	 ((= 0 steps) '(0 0 0 0))
-	 (else
-		(let* ((directions '(left right up down wait))
-					 (move-vertices (map (lambda (x) move-robot world x) directions)))
-			(map
-			 (lambda (w) (+ (score w) (a* w (- steps 1) heur score)))
-			 move-vertices)))))
+(define (best-moves1 evaluator heap)
+ (let ((cost&world&moves (pairing-heap-min heap))
+       (heap1 (pairing-heap-remove-min heap)))
+  (foldl
+   (lambda (heap move)
+    (let ((world1 (move-robot (vector-ref cost&world&moves 1) move)))
+     (if world1
+         (let ((world2 (simulate world1)))
+          (pairing-heap-insert
+           (vector (evaluator world2)
+                   world2
+                   (cons move (vector-ref cost&world&moves 2)))
+           heap))
+         heap)))
+   heap1
+   moves)))
 
+(define (best-moves evaluator world n)
+ (let loop ((n n) (heap (pairing-heap-insert
+                          (vector (evaluator world) world '())
+                          (pairing-heap-empty (lambda (a b) (< (vector-ref a 0) (vector-ref b 0)))))))
+  (display n)(newline)
+  (if (= n 0)
+      heap
+      (loop (- n 1) (best-moves1 evaluator heap)))))
 
-(define (make-queue-compare h)
-	(lambda (a b)
-		(cond
-		 ((< (h (car a)) (h (car b))) -1)
-		 ((> (h (car b)) (h (car a))) 1)
-		 (else 0))))
+(define (pairing-heap->list heap)
+ (let loop ((heap heap) (r '()))
+  (if (pairing-heap-empty? heap)
+      (reverse r)
+      (loop (pairing-heap-remove-min heap)
+            (cons (pairing-heap-min heap) r)))))
 
-(define the-queue '())
+(define (test-search)
+ (for-each 
+  (lambda (a) 
+   (format #t "Node ~a ~a~%" (vector-ref a 0) (vector-ref a 2))
+   (world-pp (vector-ref a 1)))
+ (pairing-heap->list (best-moves (lambda _ 1) faq-2-1 10))))
 
-(define (queue-iter world h)
-	(set! the-queue (make-queue-compare h))
-	(ph-iter '() world))
-
-(define (ph-iter steps world)
-	(let* ((directions '(left right up down wait))
-				 (new (map (lambda (dir)
-										 (cons (move-robot world dir) (cons dir steps)))
-									 directions)))
-		(set! the-queue (foldl (lambda (ph entry)
-														 (pairing-heap-insert entry ph))
-													 the-queue
-													 new)))
-	(let ((e (pairing-heap-min the-queue)))
-		(ph-iter (cdr e) (car e))))

@@ -1,4 +1,4 @@
-CSCFLAGS = -O2 -uses parse-input -uses pairing-heap
+CSCFLAGS = -O2 -uses parse-input -uses heuristic  -uses pairing-heap
 CSC = csc $(CSCFLAGS)
 
 SOURCES = $(shell find src/ -iname \*.scm -or -iname \*.ss)
