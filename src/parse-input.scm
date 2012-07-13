@@ -3,11 +3,18 @@
 (declare (unit parse-input))
 
 (use srfi-13)
+(use srfi-69)
 (use list-utils)
 (use srfi-1)
 (require-extension records)
 (require-extension srfi-17)
 (require-extension srfi-9)
+
+(define (fatal x)
+  (display "fatal \"")
+  (display x)
+  (display "\"")
+)
 
 (define-syntax (define-gs-record x r c)
   (let ((type (cadr x))
@@ -36,7 +43,6 @@
 
 (define-gs-record map-info maplines water flooding waterproof)
 
-
 (define (parse-input)
   (define (convert-to-symbol char)
 	   (cond 
@@ -48,15 +54,24 @@
 	    ((eq? char #\O) 'open-lift)
 	    ((eq? char #\.) 'earth)
 	    ((eq? char #\space) 'space)
-	    (else (fatal "fuck you bad input"))
+	    (else (fatal char))
 	   )
 	   )
  (let* (
 	 ;;Read the lines, split on empty line
-	 (thelines (let-values (((a b) (span (lambda (x) (string=? x "")) (read-lines)))) (cons a b))
+	 (thelines (let-values (((a b) (span (lambda (x) (not (string=? "" x))) (read-lines)))) (cons a b))
 			 )
-         (mineinfo (cdr thelines))
+         (mineinfo (map (lambda (s) 
+			  (cons (read s) 
+				(read s))) 
+			(map open-input-string 
+			     (cdr thelines)
+			     )))
 	 )
+   (display "lines:")
+   (display (car thelines))
+   (display "other:")
+   (display (cdr thelines))
     (make-map-info (list->vector (map (lambda (line)
 				   (list->vector (map convert-to-symbol (string->list line)))) (car thelines))) 0 0 10)
     )
