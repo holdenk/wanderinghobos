@@ -1,6 +1,7 @@
 ;;Parse the initial input
 ;;Its a me MARIO! I make the pizza pie
 (require-extension srfi-13)
+(require-extension records)
 
 (define-record map-info maplines water flooding waterproof)
 
