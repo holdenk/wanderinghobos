@@ -11,19 +11,21 @@
    (lambda (heap move)
     (let ((world1 (move-robot (vector-ref cost&world&moves 1) move)))
      (if world1
-         (pairing-heap-insert
-          (vector (evaluator (vector-ref cost&world&moves 0))
-                  world1
-                  (cons move (vector-ref cost&world&moves 2)))
-          heap)
+         (let ((world2 (simulate world1)))
+          (pairing-heap-insert
+           (vector (evaluator world2)
+                   world2
+                   (cons move (vector-ref cost&world&moves 2)))
+           heap))
          heap)))
-   heap
+   heap1
    moves)))
 
-(define (best-moves evaluator world)
- (let loop ((n 20) (heap (pairing-heap-insert
+(define (best-moves evaluator world n)
+ (let loop ((n n) (heap (pairing-heap-insert
                           (vector (evaluator world) world '())
                           (pairing-heap-empty (lambda (a b) (< (vector-ref a 0) (vector-ref b 0)))))))
+  (display n)(newline)
   (if (= n 0)
       heap
       (loop (- n 1) (best-moves1 evaluator heap)))))
@@ -37,8 +39,9 @@
 
 (define (test-search)
  (for-each 
-   (lambda (a) 
-    (format #t "Node ~a ~a~%" (vector-ref a 0) (vector-ref a 2))
-    (world-pp (vector-ref a 1)))
-  (pairing-heap->list (best-moves (lambda _ 1) faq-2-1))))
+  (lambda (a) 
+   (format #t "Node ~a ~a~%" (vector-ref a 0) (vector-ref a 2))
+   (world-pp (vector-ref a 1)))
+ (pairing-heap->list (best-moves (lambda _ 1) faq-2-1 10))))
+
 
