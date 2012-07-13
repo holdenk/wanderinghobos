@@ -1,6 +1,9 @@
 ;;Parse the initial input
 ;;Its a me MARIO! I make the pizza pie
-(require-extension srfi-13)
+(declare (unit parse-input))
+
+(use srfi-13)
+(use list-utils)
 
 (define-record map-info maplines water flooding waterproof)
 

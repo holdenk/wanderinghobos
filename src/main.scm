@@ -1,3 +1,3 @@
-(require 'parse-input)
-(require 'fail-safe)
+(declare (uses parse-input))
+(declare (uses fail-safe))
 (display (parse-input))
