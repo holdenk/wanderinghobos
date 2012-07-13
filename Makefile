@@ -1,4 +1,26 @@
-main:
-	csc *.scm -o main
-test: main
-	cat maps/contest1.amp | ./main
+CSCFLAGS = -O2
+CSC = csc $(CSCFLAGS)
+
+SOURCES = $(shell find src/ -iname \*.scm -or -iname \*.ss)
+
+PRODUCT = lifter
+
+TEST_CASES = contest1
+
+all: $(PRODUCT) test
+
+$(PRODUCT): $(SOURCES)
+	$(CSC) -o $@ $^
+
+test: $(PRODUCT) $(TEST_CASES)
+
+clean:
+	rm -f lifter src/*.o
+
+.PHONY: all clean test
+
+
+#### TEST CASES ####
+
+%.result: tests/%.map $(PRODUCT)
+	cat $< | ./$(PRODUCT) > $@

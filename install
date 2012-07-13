@@ -1,0 +1,10 @@
+#!/bin/bash
+if [ ! -f lifter ]
+then
+		echo "Building..."
+		gmake clean lifter
+else
+		echo "Nothing to do."
+fi
+echo;
+echo "DONE!"
