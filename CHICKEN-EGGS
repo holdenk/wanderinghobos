@@ -3,3 +3,4 @@ list-utils
 vector-utils
 test
 vector-lib
+pairing-heap
