@@ -2,7 +2,7 @@
 ;;Its a me MARIO! I make the pizza pie
 (require-extension srfi-13)
 
-(define-structure map-info maplines water flooding waterproof)
+(define-record map-info maplines water flooding waterproof)
 
 
 (define (parse-input)
@@ -17,10 +17,11 @@
 	    ((eq? #\space) 'SPACE)
 	    (else (fatal "fuck you bad input"))
 	   )
+	   )
  (let* (
 	 ;;Read the lines, split on empty line
-	 (thelines (span (lambda (x) (string=? "" x))) 
-		   (read-lines))
+	 (thelines (span (lambda (x) (string=? "" x))
+		   (read-lines)))
          (mineinfo (cdr thelines))
 	 )
     (map-info (list->vector (map (lambda (line)
