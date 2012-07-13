@@ -1,4 +1,4 @@
-(require 'parse-input)
-(require 'failsafe)
-(parse-input)
-(display "ya")
+(declare (uses parse-input))
+(declare (uses fail-safe))
+(declare (uses simulate))
+(display (parse-input))

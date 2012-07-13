@@ -2,3 +2,4 @@
 .vagrant
 lifter
 *.result
+src/*.o
