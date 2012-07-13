@@ -24,7 +24,9 @@
  (let loop ((n 20) (heap (pairing-heap-insert
                           (vector (evaluator world) world '())
                           (pairing-heap-empty (lambda (a b) (< (vector-ref a 0) (vector-ref b 0)))))))
-  (best-moves1 evaluator heap)))
+  (if (= n 0)
+      heap
+      (loop (- n 1) (best-moves1 evaluator heap)))))
 
 (define (pairing-heap->list heap)
  (let loop ((heap heap) (r '()))
