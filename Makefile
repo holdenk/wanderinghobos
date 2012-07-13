@@ -24,7 +24,7 @@ package:
 test: $(PRODUCT) $(addprefix test-results/, $(addsuffix .result, $(TEST_CASES)))
 
 clean:
-	rm -f lifter src/*.o
+	rm -f lifter src/*.o icfp-*.tgz
 	rm -rf test-results
 
 .PHONY: all clean test package
