@@ -34,7 +34,7 @@
 	  (list %define getter (list %getter-with-setter getter setter))))
       fields))))
 
-(define-gs-record map-info maplines water flooding waterproof)
+(define-gs-record world board water flooding waterproof)
 
 
 (define (parse-input)
@@ -57,7 +57,7 @@
 			 )
          (mineinfo (cdr thelines))
 	 )
-    (make-map-info (list->vector (map (lambda (line)
+    (make-world (list->vector (map (lambda (line)
 				   (list->vector (map convert-to-symbol (string->list line)))) (car thelines))) 0 0 10)
     )
 )
