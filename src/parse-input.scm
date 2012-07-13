@@ -6,6 +6,7 @@
 (use srfi-69)
 (use list-utils)
 (use srfi-1)
+(use vector-lib)
 (require-extension records)
 (require-extension srfi-17)
 (require-extension srfi-9)
@@ -42,6 +43,21 @@
       fields))))
 
 (define-gs-record world board water flooding waterproof)
+
+(define (world-pp world)
+  (vector-for-each (lambda (i l)
+		     (vector-for-each (lambda (i l2)
+				      (display l2)
+				      ) l)
+		     (display "\n")
+		     )
+	      (world-board world)
+	      )
+  (display (format "Water ~A\nFlooding ~A\nWaterproof ~A\n"
+		   (world-water world)
+		   (world-flooding world)
+		   (world-waterproof world)))
+)
 
 (define (parse-input)
   (define (convert-to-symbol char)
