@@ -3,3 +3,4 @@
 lifter
 *.result
 src/*.o
+icfp-*.tgz
