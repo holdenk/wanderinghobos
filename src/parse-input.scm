@@ -40,13 +40,14 @@
 (define (parse-input)
   (define (convert-to-symbol char)
 	   (cond 
-	    ((eq? char #\R) 'ROBOT)
-	    ((eq? char #\#) 'WALL)
-	    ((eq? char #\*) 'ROCK)
-	    ((eq? char #\\) 'HUG);;Fuck calling this shit a Lambda
-	    ((eq? char #\L) 'LIFT)
-	    ((eq? char #\.) 'EARTH)
-	    ((eq? char #\space) 'SPACE)
+	    ((eq? char #\R) 'robot)
+	    ((eq? char #\#) 'wall)
+	    ((eq? char #\*) 'rock)
+	    ((eq? char #\\) 'hug);;Fuck calling this shit a Lambda
+	    ((eq? char #\L) 'closed-lift)
+	    ((eq? char #\O) 'open-lift)
+	    ((eq? char #\.) 'earth)
+	    ((eq? char #\space) 'space)
 	    (else (fatal "fuck you bad input"))
 	   )
 	   )
