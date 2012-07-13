@@ -23,7 +23,7 @@
  (let* ((initial-hugs (count-hugs world))
         (evaluator1 (lambda (path world) (evaluator initial-hugs path world))))
   (let loop ((n n) (heap (pairing-heap-insert
-                          (vector (evaluator1 initial-hugs '() world) world '())
+                          (vector (evaluator1 '() world) world '())
                           (pairing-heap-empty (lambda (a b) (< (vector-ref a 0) (vector-ref b 0)))))))
    (display n)(newline)
    (if (= n 0)
