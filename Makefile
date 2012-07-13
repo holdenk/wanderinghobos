@@ -10,7 +10,7 @@ TEST_CASES = contest1
 all: $(PRODUCT) test
 
 $(PRODUCT): $(SOURCES)
-	$(CSC) -o $@ $^
+	cd ./src; $(CSC) -o ../$@ src/main.scm
 
 test: $(PRODUCT) $(addsuffix .result, $(TEST_CASES))
 

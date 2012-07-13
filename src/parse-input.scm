@@ -25,6 +25,6 @@
          (mineinfo (cdr thelines))
 	 )
     (map-info (list->vector (map (lambda (line)
-				   (map convert-to-symbol (string->list line))) (car thelines))) 0 0 10)
+				   (list->vector (map convert-to-symbol (string->list line)))) (car thelines))) 0 0 10)
     )
 )
