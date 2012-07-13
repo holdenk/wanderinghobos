@@ -12,7 +12,7 @@ all: $(PRODUCT) test
 $(PRODUCT): $(addsuffix .o, $(basename $(SOURCES)))
 	$(CSC) -o $@ $^
 
-test: $(PRODUCT) $(addsuffix .result, $(TEST_CASES))
+test: $(PRODUCT) $(addprefix test-results/, $(addsuffix .result, $(TEST_CASES)))
 
 clean:
 	rm -f lifter src/*.o
@@ -28,5 +28,6 @@ clean:
 
 #### TEST CASES ####
 
-%.result: tests/%.map $(PRODUCT)
+test-results/%.result: tests/%.map $(PRODUCT)
+	mkdir -p test-results
 	cat $< | ./$(PRODUCT) > $@
