@@ -19,7 +19,7 @@ clean:
 	rm -rf test-results
 
 .PHONY: all clean test
-#.SILENT:
+.SILENT:
 
 %.o: %.scm
 	$(CSC) -c $<
