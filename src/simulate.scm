@@ -44,7 +44,6 @@
               (for-each-n (lambda (x) (f x y))
                (board-width board)))
   (board-height board)))
-
 (define (board-height board) (vector-length board))
 (define (board-width board) (vector-length (vector-ref board 0)))
 
@@ -188,8 +187,27 @@
     board)
    (error "AIN'T GOT NO ROBOT?!?"))))
 
+(define (find-hugs-board board)
+  (vector-fold (lambda (x hugs vector) 
+		 (vector-fold (lambda (y hugs element)
+				(if (eq? element 'hug)
+				    (cons (list x y) hugs)
+				    hugs
+				    )
+				)
+			      hugs
+			      vector
+			      )
+
+		 )
+	       (list ) board)
+  )
+
 (define (find-robot world)
  (find-robot-board (world-board world)))
+
+(define (find-hugs world)
+ (find-hugs-board (world-board world)))
 
 (define (move-robot world direction)
  (let ((board (move-robot-board (world-board world) direction)))
