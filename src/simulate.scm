@@ -1,7 +1,6 @@
 (declare (unit simulate))
 
-(declare (uses parse-input))
-
+(require-library parse-input)
 (use test srfi-1 posix)
 
 (define (for-each-n f n)
@@ -24,6 +23,20 @@
 
 (define (map-matrix f m) (map-vector (lambda (v) (map-vector f v)) m))
 
+(define (map-indexed-matrix f m)
+ (map-indexed-vector (lambda (r i) (map-indexed-vector (lambda (c j) (f c j i)) r)) m))
+
+(define (map-indexed-vector f v)
+ ;; needs work: Won't work correctly when F is nondeterministic.
+ (let ((u (make-vector (vector-length v))))
+  (for-each-n
+   (lambda (i)
+    (vector-set!
+     u i
+     (f (vector-ref v i) i)))
+   (vector-length v))
+  u))
+
 (define (reverse-vector v) (list->vector (reverse (vector->list v))))
 
 (define (for-each-board-index f board)
@@ -31,7 +44,6 @@
               (for-each-n (lambda (x) (f x y))
                (board-width board)))
   (board-height board)))
-
 (define (board-height board) (vector-length board))
 (define (board-width board) (vector-length (vector-ref board 0)))
 
@@ -175,8 +187,27 @@
     board)
    (error "AIN'T GOT NO ROBOT?!?"))))
 
+(define (find-hugs-board board)
+  (vector-fold (lambda (x hugs vector) 
+		 (vector-fold (lambda (y hugs element)
+				(if (eq? element 'hug)
+				    (cons (list x y) hugs)
+				    hugs
+				    )
+				)
+			      hugs
+			      vector
+			      )
+
+		 )
+	       (list ) board)
+  )
+
 (define (find-robot world)
  (find-robot-board (world-board world)))
+
+(define (find-hugs world)
+ (find-hugs-board (world-board world)))
 
 (define (move-robot world direction)
  (let ((board (move-robot-board (world-board world) direction)))
