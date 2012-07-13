@@ -1,3 +1,4 @@
 (require 'parse-input)
 (require 'failsafe)
-(display (parse-input))
+(parse-input)
+(display "ya")
