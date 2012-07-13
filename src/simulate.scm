@@ -1,3 +1,5 @@
+(declare (unit simulate))
+
 (define (for-each-vector f v)
  (for-each-n (lambda (i) (f (vector-ref v i))) (vector-length v)))
 

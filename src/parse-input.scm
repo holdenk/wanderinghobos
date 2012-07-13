@@ -1,8 +1,37 @@
 ;;Parse the initial input
 ;;Its a me MARIO! I make the pizza pie
-(require-extension srfi-13)
+(declare (unit parse-input))
 
-(define-record map-info maplines water flooding waterproof)
+(use srfi-13)
+(use list-utils)
+(require-extension records)
+(require-extension srfi-17)
+
+(define-syntax (define-gs-record x r c)
+  (let ((type (cadr x))
+        (fields (cddr x))
+ (%begin (r 'begin))
+ (%define-record (r 'define-record))
+ (%define (r 'define))
+ (%getter-with-setter (r 'getter-with-setter)))
+    `(,%begin
+      (,%define-record ,type ,@fields)
+      ,@(map (lambda (f)
+	(let* ((getter (string->symbol
+			(string-append
+			 (symbol->string 
+			  (strip-syntax type))
+			 "-"
+			 (symbol->string 
+			  (strip-syntax f)))))
+	       (setter (string->symbol
+			(string-append
+			 (symbol->string
+			  (strip-syntax getter))
+			 "-set!"))))
+	  (list %define getter (list %getter-with-setter getter setter))))
+      fields))))
+(define-gs-record map-info maplines water flooding waterproof)
 
 
 (define (parse-input)
@@ -15,7 +44,7 @@
 	    ((eq? #\L) 'LIFT)
 	    ((eq? #\.) 'EARTH)
 	    ((eq? #\space) 'SPACE)
-	    (else (fatal "fuck you bad input"))
+	    (else (fatal "Bad input"))
 	   )
 	   )
  (let* (
