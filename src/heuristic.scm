@@ -14,10 +14,10 @@
 )
 
 (define (count-hugs world)
-  (count 'hug world)
+  (count-obj 'hug world)
 )
 (define (count-earth world)
-  (count 'earth world)
+  (count-obj 'earth world)
 )
 (define (count-obj obj world)
   (vector-fold (lambda (i count v)
