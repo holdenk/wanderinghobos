@@ -41,7 +41,7 @@
 	    ((eq? #\L) 'LIFT)
 	    ((eq? #\.) 'EARTH)
 	    ((eq? #\space) 'SPACE)
-	    (else (fatal "fuck you bad input"))
+	    (else (fatal "Bad input"))
 	   )
 	   )
  (let* (
