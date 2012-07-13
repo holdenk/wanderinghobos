@@ -3,11 +3,19 @@
 (declare (unit parse-input))
 
 (use srfi-13)
+(use srfi-69)
 (use list-utils)
 (use srfi-1)
+(use vector-lib)
 (require-extension records)
 (require-extension srfi-17)
 (require-extension srfi-9)
+
+(define (fatal x)
+  (display "fatal \"")
+  (display x)
+  (display "\"")
+)
 
 (define-syntax (define-gs-record x r c)
   (let ((type (cadr x))
@@ -36,6 +44,21 @@
 
 (define-gs-record world board water flooding waterproof underwater iteration rocks)
 
+(define (world-pp world)
+  (vector-for-each (lambda (i l)
+		     (vector-for-each (lambda (i l2)
+				      (display l2)
+				      ) l)
+		     (display "\n")
+		     )
+	      (world-board world)
+	      )
+  (display (format "Water ~A\nFlooding ~A\nWaterproof ~A\n"
+		   (world-water world)
+		   (world-flooding world)
+		   (world-waterproof world)))
+)
+
 (define (parse-input)
   (define (convert-to-symbol char)
 	   (cond 
@@ -47,16 +70,28 @@
 	    ((eq? char #\O) 'open-lift)
 	    ((eq? char #\.) 'earth)
 	    ((eq? char #\space) 'space)
-	    (else (fatal "fuck you bad input"))
+	    (else (fatal char))
 	   )
 	   )
  (let* (
 	 ;;Read the lines, split on empty line
-	 (thelines (let-values (((a b) (span (lambda (x) (string=? x "")) (read-lines)))) (cons a b))
+	 (thelines (let-values (((a b) (span (lambda (x) (not (string=? "" x))) (read-lines)))) (cons a b))
 			 )
-         (mineinfo (cdr thelines))
+         (mineinfo (alist->hash-table 
+		    (map (lambda (s) 
+			   (cons (read s) 
+				 (read s))) 
+			 (map open-input-string 
+			      (cdr thelines)
+			      ))))
 	 )
-  (make-world (list->vector (map (lambda (line)
-				   (list->vector (map convert-to-symbol (string->list line)))) (car thelines))) 0 0 10 0 0 '())
+    (make-world (list->vector (map (lambda (line)
+				   (list->vector (map convert-to-symbol (string->list line)))) (car thelines)))
+		   (hash-table-ref/default mineinfo "Water" +inf.0)
+		   (hash-table-ref/default mineinfo "Flooding" +inf.0)
+		   (hash-table-ref/default mineinfo "Waterproof" +inf.0)
+                   0
+                   '()
+		   )
     )
 )

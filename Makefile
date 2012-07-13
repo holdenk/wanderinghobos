@@ -5,20 +5,29 @@ SOURCES = $(shell find src/ -iname \*.scm -or -iname \*.ss)
 
 PRODUCT = lifter
 
+STATIC = install PACKAGES-TESTING README Makefile
+
 TEST_CASES = contest1
+
+TEAM_NUM = 0
 
 all: $(PRODUCT) test
 
 $(PRODUCT): $(addsuffix .o, $(basename $(SOURCES)))
 	$(CSC) -o $@ $^
 
+package:
+	vagrant up
+	vagrant ssh -c "cd src; make clean lifter"
+	tar czf icfp-$(TEAM_NUM).tgz $(PRODUCT) $(SOURCES) $(STATIC)
+
 test: $(PRODUCT) $(addprefix test-results/, $(addsuffix .result, $(TEST_CASES)))
 
 clean:
-	rm -f lifter src/*.o
+	rm -f lifter src/*.o icfp-*.tgz
 	rm -rf test-results
 
-.PHONY: all clean test
+.PHONY: all clean test package
 .SILENT:
 
 %.o: %.scm

@@ -7,7 +7,7 @@ Vagrant::Config.run do |config|
   config.vm.box_url = "https://github.com/downloads/mgregson/icfp2012-vagrant/icfp2012.box"
   config.vm.share_folder "v-root", mount_point, "."
   config.vm.provision :shell do |shell|
-    shell.inline = "apt-get install -y `cat $1/PACKAGES-TESTING`"
+    shell.inline = "apt-get install -y `cat $1/PACKAGES-TESTING`; chicken-install `cat $1/CHICKEN-EGGS`"
     shell.args = mount_point
   end
 end
