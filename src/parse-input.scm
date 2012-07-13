@@ -101,6 +101,7 @@
 		   (hash-table-ref/default mineinfo "Flooding" +inf.0)
 		   (hash-table-ref/default mineinfo "Waterproof" +inf.0)
                    0
+                   0
                    '()
 		   )
     )
