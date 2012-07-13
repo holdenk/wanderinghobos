@@ -135,7 +135,7 @@
          (board-set! (move-it) (+ d-x 2) d-y 'rock))
         ((and (= d-x (- l-x 1)) (= d-x d-y) (rock? board d-x d-y) (empty? board (- d-x 2) d-y))
          (board-set! (move-it) (- d-x 2) d-y 'rock))
-        (else 'invalid-move))))
+        (else #f))))
 
 ;; #*. #
 ;; # R #
