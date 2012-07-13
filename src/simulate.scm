@@ -209,15 +209,12 @@
      #(wall empty robot empty wall)
      #(wall wall wall wall wall))))
 
-(world-board faq-2)
-(world-board (simulate faq-2))
-(i-am-dead? (simulate (move-robot faq-2 'left)))
-
-(i-am-dead? (simulate (move-robot faq-2-1 'left)))
+;; (world-board faq-2)
+;; (world-board (simulate faq-2))
+;; (i-am-dead? (simulate (move-robot faq-2 'left)))
+;; (i-am-dead? (simulate (move-robot faq-2-1 'left)))
 
 (define (run-test)
  (and (equal? (i-am-dead? (simulate (move-robot faq-2 'left))) #f)
     (equal? (i-am-dead? (simulate (move-robot faq-2-1 'left))) #t)
     (equal? (i-am-dead? (simulate (move-robot faq-2-1 'right))) #f)))
-
-
