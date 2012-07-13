@@ -1,10 +1,11 @@
+(use test srfi-1 posix parse-input)
 (declare (unit simulate))
-
-(define (for-each-vector f v)
- (for-each-n (lambda (i) (f (vector-ref v i))) (vector-length v)))
 
 (define (for-each-n f n)
  (let loop ((i 0)) (when (< i n) (f i) (loop (+ i 1)))))
+
+(define (for-each-vector f v)
+ (for-each-n (lambda (i) (f (vector-ref v i))) (vector-length v)))
 
 (define (map-n1 f n)
  (let loop ((i 0) (c '()))
@@ -65,11 +66,13 @@
 (define (execute-square board x y board-out)
  (cond ((and (rock? board x y) (empty? board x (- y 1)))
         (board-set! board-out x y 'empty)
-        (board-set! board-out x (- y 1) 'rock))
+        (board-set! board-out x (- y 1) 'rock)
+        (list (list x (- y 1))))
        ((and (rock? board x y) (rock? board x (- y 1))
            (empty? board (+ x 1) y) (empty? board (+ x 1) (- y 1)))
         (board-set! board-out x y 'empty)
-        (board-set! board-out (+ x 1) (- y 1) 'rock))
+        (board-set! board-out (+ x 1) (- y 1) 'rock)
+        (list (list (+ x 1) (- y 1))))
        ((and (rock? board x y)
            (rock? board x (- y 1))
            (or (and (exists? board (+ x 1) y) (not (empty? board (+ x 1) y)))
@@ -77,41 +80,65 @@
            (empty? board (- x 1) y)
            (empty? board (- x 1) (- y 1)))
         (board-set! board-out x y 'empty)
-        (board-set! board-out (- x 1) (- y 1) 'rock))
+        (board-set! board-out (- x 1) (- y 1) 'rock)
+        (list (list (- x 1) (- y 1))))
        ((and (rock? board x y) (hug? board x (- y 1))
            (empty? board (+ x 1) y) (empty? board (+ x 1) (- y 1)))
         (board-set! board-out x y 'empty)
-        (board-set! board-out (+ x 1) (- y 1) 'rock))
+        (board-set! board-out (+ x 1) (- y 1) 'rock)
+        (list (list (+ x 1) (- y 1))))
        ((and (closed-lift? board x y) (not (some-board hug? board)))
-        (board-set! board-out x y 'open-lift))
-       (else (board-set! board-out x y (board-ref board x y))))
- board-out)
+        (board-set! board-out x y 'open-lift)
+        '())
+       (else
+        (board-set! board-out x y (board-ref board x y))
+        '())))
 
-(define (simulate board)
+(define (simulate-board board)
  ;; Simulate runs in top-down rather than bottom-up order!
  (let ((board (reverse-vector board)))
-  (let ((new-board (map-matrix (const 'empty) board)))
+  (let ((new-board (map-matrix (const 'empty) board))
+        (falling-rocks '()))
    (for-each-board-index 
-    (lambda (x y) (execute-square board x y new-board))
+    (lambda (x y) (set! falling-rocks 
+                   (append (execute-square board x y new-board)
+                           falling-rocks)))
     board)
-   (reverse-vector new-board))))
+   (list (reverse-vector new-board)
+         (map (lambda (rock) (list (car rock) (cadr rock)))
+              falling-rocks)))))
 
-(define (find-robot board)
- (call-with-current-continuation
-  (lambda (k)
-   (for-each-board-index 
-    (lambda (x y) (when (robot? board x y) (k (list x y))))
-    board)
-   (error "AIN'T GOT NO ROBOT?!?"))))
+(define (robot-underwater? world)
+ (> (cadr (find-robot world))
+    (- (board-height (world-board world))
+       (world-water world))))
 
-(define (valid-move? board x2 y2)
- (or (exists? board x2 y2)
-    (hug? board x2 y2)
-    (open-lift? board x2 y2)
-    (earth? board x2 y2)))
+(define (simulate world)
+ (let ((new-board (simulate-board (world-board world))))
+  (make-world (car new-board)
+              (+ (world-water world)
+                 (+ (if (= (modulo (world-iteration world) (world-flooding world)) 0)
+                        1
+                        0)))
+              (world-flooding world)
+              (world-waterproof world)
+              (+ (world-underwater world) (if (robot-underwater? world) 1 0))
+              (+ (world-iteration world) 1)
+              (map (lambda (position)
+                    (list (car position) 
+                          (- (board-height (car new-board)) (cadr position) 1)))
+                   (cadr new-board)))))
 
-(define (move-robot board direction)
- (let* ((location (find-robot board))
+(define (i-am-dead? world)
+ (let ((robot (find-robot world)))
+  (any 
+   (lambda (location) 
+    (and (= (car location) (car robot))
+       (= (car location) (- (cadr robot) 1))))
+   (world-rocks world))))
+
+(define (move-robot-board board direction)
+ (let* ((location (find-robot-board board))
         (destination
          (case direction
           ;; TODO abort
@@ -137,11 +164,57 @@
          (board-set! (move-it) (- d-x 2) d-y 'rock))
         (else #f))))
 
+(define (find-robot-board board)
+ (call-with-current-continuation
+  (lambda (k)
+   (for-each-board-index 
+    (lambda (x y) (when (robot? board x y) (k (list x y))))
+    board)
+   (error "AIN'T GOT NO ROBOT?!?"))))
+
+(define (find-robot world)
+ (find-robot-board (world-board world)))
+
+(define (move-robot world direction)
+ (let ((board (move-robot-board (world-board world) direction)))
+  (if board
+      (make-world board
+                  (world-water world)
+                  (world-flooding world)
+                  (world-waterproof world)
+                  (world-underwater world)
+                  (world-iteration world)
+                  (world-rocks world))
+      #f)))
+
 ;; #*. #
 ;; # R #
 ;; #####
 
+(define (dry-world board) (make-world board +inf.0 +inf.0 +inf.0 0 0 '()))
+
 (define faq-2
- '#(#(wall rock earth empty wall)
-    #(wall empty robot empty wall)
-    #(wall wall wall wall wall)))
+ (dry-world
+  '#(#(wall rock earth empty wall)
+     #(wall empty robot empty wall)
+     #(wall wall wall wall wall))))
+
+(define faq-2-1
+ (dry-world
+  '#(#(wall rock earth empty wall)
+     #(wall empty empty rock wall)
+     #(wall empty robot empty wall)
+     #(wall wall wall wall wall))))
+
+(world-board faq-2)
+(world-board (simulate faq-2))
+(i-am-dead? (simulate (move-robot faq-2 'left)))
+
+(i-am-dead? (simulate (move-robot faq-2-1 'left)))
+
+(define (run-test)
+ (and (equal? (i-am-dead? (simulate (move-robot faq-2 'left))) #f)
+    (equal? (i-am-dead? (simulate (move-robot faq-2-1 'left))) #t)
+    (equal? (i-am-dead? (simulate (move-robot faq-2-1 'right))) #f)))
+
+
