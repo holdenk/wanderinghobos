@@ -79,7 +79,7 @@
 	    ((eq? char #\L) 'closed-lift)
 	    ((eq? char #\O) 'open-lift)
 	    ((eq? char #\.) 'earth)
-	    ((eq? char #\space) 'space)
+	    ((eq? char #\space) 'empty)
 	    (else (fatal char))
 	   )
 	   )
