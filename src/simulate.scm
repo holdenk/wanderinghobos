@@ -188,8 +188,8 @@
    (error "AIN'T GOT NO ROBOT?!?"))))
 
 (define (find-hugs-board board)
-  (vector-fold (lambda (x hugs vector) 
-		 (vector-fold (lambda (y hugs element)
+  (vector-fold (lambda (y hugs vector) 
+		 (vector-fold (lambda (x hugs element)
 				(if (eq? element 'hug)
 				    (cons (list x y) hugs)
 				    hugs
