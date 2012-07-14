@@ -30,11 +30,12 @@
    ;;fuckit
    (set! *best-node-so-far* #f)
    (set! *best-node* #f)
+   (set! flw #f)
    ;;i've got a time machine
    (let* 
  		((world (file->world x))
 		 (board (world-board world))
-		 (the-world (best-move-random-with-no-repeats (file->world x) (+ 100 (* 3 (board-height board) (board-width board))) 3)))
+		 (the-world (best-move-random (file->world x) (+ 100 (* 3 (board-height board) (board-width board))) 3)))
 ;;		(display (output-moves (vector-ref the-world 2)))
 ;;		(display (vector-ref the-world 1))
  	      (score-world (count-hugs (file->world x)) (vector-ref the-world 2)  (vector-ref the-world 1))))

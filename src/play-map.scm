@@ -9,7 +9,7 @@
 			 (wwidth (car (vector->list
 										 (vector-map (lambda (i e) (vector-length e))
 																 (world-board w)))))
-			 (themoves (reverse (vector-ref (best-move-random-with-no-repeats
+			 (themoves (reverse (vector-ref (best-move-random
 																			 w
 																			 (+ 250
 																					(* 3

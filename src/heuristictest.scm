@@ -31,13 +31,6 @@ L  .\\#
 L  .\\#
 ######"))
 
-(define simple-world-test-1
- (string->world
-  "#. *R#
-## \\.#
-######"))
-
-
 
 (define (dry-world board) (make-world board +inf.0 +inf.0 +inf.0 0 0 '()))
 (define heuristictestworld1
@@ -113,12 +106,35 @@ L  .\\#
 	    (test 1 (manhattan-dist-to-hug world-test-2))
 	    (test 2 (manhattan-dist-to-hug world-test-1))
 )
+(test-group "floyd-dist-to-hug-tests"
+	    (test 1 (floyd-dist-to-hug (hobofloydwarshall (world-board heuristictestworld1)) heuristictestworld1))
+	    (test 1.0 (floyd-dist-to-hug (hobofloydwarshall (world-board heuristictestworld2)) heuristictestworld2))
+	    (test 3.0 (floyd-dist-to-hug (hobofloydwarshall (world-board heuristictestworld3)) heuristictestworld3))
+	    (test 0.0 (floyd-dist-to-hug (hobofloydwarshall (world-board heuristictestworld4)) heuristictestworld4))
+	    (test 1 (floyd-dist-to-hug (hobofloydwarshall (world-board heuristictestworld5)) heuristictestworld5))
+	    (test 1.0 (floyd-dist-to-hug (hobofloydwarshall (world-board world-test-2)) world-test-2))
+	    (test 2.0 (floyd-dist-to-hug (hobofloydwarshall (world-board world-test-1)) world-test-1))
+)
+
+(define simple-world-test-1
+ (string->world
+  "#. *R#
+## \\.#
+######"))
 (define hfwswt1 (hobofloydwarshall (world-board simple-world-test-1)))
 (test-group "floydwarshall"
 	    (test 0 (path-cost 0 0 0 0 hfwswt1 (world-board simple-world-test-1)))
 	    (test 0 (path-cost 1 1 1 1 hfwswt1 (world-board simple-world-test-1)))
 	    (test 0 (path-cost 1 1 1 1 hfwswt1 (world-board simple-world-test-1)))
 	    (test 1 (path-cost 0 0 1 0 hfwswt1 (world-board simple-world-test-1)))
+	    (test 'empty (board-ref (world-board simple-world-test-1) 2 0))
+	    (test #t (passable? (world-board simple-world-test-1) 2 0)) 
+	    (test #t (passable? (world-board simple-world-test-1) 1 0)) 
+	    (test #f (passable? (world-board simple-world-test-1) 3 0)) 
+	    (test 1 (path-cost 1 0 2 0 hfwswt1 (world-board simple-world-test-1)))
+	    (test +inf.0 (path-cost 2 0 3 0 hfwswt1 (world-board simple-world-test-1)))
+	    (test +inf.0 (path-cost 1 0 3 0 hfwswt1 (world-board simple-world-test-1)))
+	    (test 2.0 (path-cost 1 0 2 1 hfwswt1 (world-board simple-world-test-1)))
 )
 (test-group "score-world"
 	    (test #t (number? (score-world 1 (list ) heuristictestworld1)))
