@@ -54,7 +54,7 @@
 )
 
 ;;Currently we use fairly simple
-(define heuristic-world sexy-heuristic-world)
+(define heuristic-world fairly-simple-heuristic-world)
 
 (define (score-world initialhugs path world)
   (let ((hugvalue (if (and (not (null? path)) 
