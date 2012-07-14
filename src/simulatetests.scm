@@ -24,8 +24,9 @@
 (test-group "test-simulator"
 	    (test (world-board smashed-world) (world-board  (simulate quantum-world))))
 
+
 (test-group "some-runs"
-	    (test 212 (vector-ref (best-move (file->world "tests/contest1.map") 100) 0))
+	    (test 212 (output-moves (reverse (vector-ref (best-move (file->world "tests/contest1.map") 100) 2))))
 	    (test 281 (vector-ref (best-move (file->world "tests/contest2.map") 100) 0))
 	    (test 275 (vector-ref (best-move (file->world "tests/contest3.map") 100) 0))
 	    (test 575 (vector-ref (best-move (file->world "tests/contest4.map") 100) 0))

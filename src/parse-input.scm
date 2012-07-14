@@ -17,6 +17,19 @@
   (display "\"")
 )
 
+(define (output-moves list) 
+  (define (sym-to-char sy) 
+    	   (cond 
+	    ((eq? sy 'down) #\D)
+	    ((eq? sy 'left) #\L)
+	    ((eq? sy 'right) #\R)
+	    ((eq? sy 'up) #\U )
+	    ((eq? sy 'wait) #\W)
+	    ((eq? sy 'abort) #\A)))
+  (list->string (map sym-to-char list)))
+
+
+
 (define-syntax (define-gs-record x r c)
   (let ((type (cadr x))
         (fields (cddr x))
