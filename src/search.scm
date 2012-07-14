@@ -101,12 +101,13 @@
  (pairing-heap-min (best-moves heuristic-world world n #f)))
 
 (define (best-move-random world n restarts) 
- (map-n (lambda _ 
-         (let ((r (pairing-heap-min (best-moves heuristic-world world n #t))))
-          (if (or (not *best-node*) (< (vector-ref r 0) (vector-ref *best-node* 0)))
-              (set! *best-node* r)
-              #f)))
-  restarts))
+ (for-each-n (lambda _ 
+              (let ((r (pairing-heap-min (best-moves heuristic-world world n #t))))
+               (if (or (not *best-node*) (< (vector-ref r 0) (vector-ref *best-node* 0)))
+                   (set! *best-node* r)
+                   #f)))
+  restarts)
+ *best-node*)
 
 (define (pairing-heap->list heap)
  (let loop ((heap heap) (r '()))
