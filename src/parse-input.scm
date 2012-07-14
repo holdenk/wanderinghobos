@@ -207,7 +207,7 @@
 (define (set-trampoline-out-in! obj in) (vector-set! obj 2 in))
 
 (define (memq/default obj alist default)
- (let ((mem (memq obj alist))) (if mem mem default)))
+ (let ((mem (assq obj alist))) (if mem (cdr mem) default)))
 
 (define (find-robot-board board)
  (call-with-current-continuation

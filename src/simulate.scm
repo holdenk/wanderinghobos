@@ -181,7 +181,7 @@
  (let ((robot (find-robot world)))
   (or (any (lambda (location) 
            (and (= (car location) (car robot))
-              (= (car location) (- (cadr robot) 1))))
+              (= (cadr location) (- (cadr robot) 1))))
           (world-rocks world))
      (< (world-waterproof world) (world-underwater world)))))
 

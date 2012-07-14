@@ -1,8 +1,42 @@
 ;;yay heuristics!
 ;;they taste like rasins
 (declare (unit heuristic))
-(declare (uses parse-input))
+(declare (uses parse-input dog))
 (use vector-lib)
+
+(define (fairly-simple-hobofloydwarshall-world initialhugs path world)
+  (define DISTCOST 1.1)
+  (simple-hobofloydwarshall-world initialhugs path world DISTCOST)
+)
+(define flw #f)
+(define (simple-hobofloydwarshall-world initialhugs path world DISTCOST)
+(define cost
+ (if (escaped? world)
+     (- (score-world initialhugs path world))
+     ;;Also they give you a lolipop after! OMG Ponies
+     (begin
+       (if (or
+	    #t;;Add something to see if the robot moved a rock here
+	    (not (null? (world-rocks world)))
+	    (not flw))
+	   (set! flw (hobofloydwarshall (world-board world)))
+	   #f
+	   )
+       (if (eq? 0 (count-hugs world))
+	   ;;We got all of teh hugs
+	   (- 
+	    (* DISTCOST (floyd-dist-to-lift flw world))
+	    (score-world initialhugs path world)
+	    )
+	   ;;We still have hugs
+	   (- 
+	    (* DISTCOST (floyd-dist-to-hug flw world))
+	    (score-world initialhugs path world)
+	    )
+	   )
+       )))
+cost
+)
 
 (define (fairly-simple-fifty-heuristic-world initialhugs path world)
   (define MANHATTANDISTCOST 1.1)
@@ -80,6 +114,7 @@
 ;;Currently we use fairly simple
 ;;(define heuristic-world fairly-simple-heuristic-world)
 (define heuristic-world fairly-simple-heuristic-world)
+;;(define heuristic-world fairly-simple-hobofloydwarshall-world)
 
 (define (score-world initialhugs path world)
   (score-world-with-min-hug-value initialhugs path world 25)
@@ -140,6 +175,7 @@
 					)) 0 hugs)
       )
   )
+
 (define (manhattan-dist-to-lift world)
   (let
       (
@@ -148,6 +184,29 @@
        )
     (mdist robot lift)
     )
+  )
+
+(define (floyd-dist-to-lift ftw world)
+  (let
+      (
+       (robot (find-robot world))
+       (lift (find-lift world))
+       )
+    (path-cost (car robot) (cadr robot) (car lift) (cadr lift) ftw (world-board world))
+    )
+  )
+
+(define (floyd-dist-to-hug ftw world)
+  (let
+      (
+       (robot (find-robot world))
+       (hugs (find-hugs world))
+      )
+    (fold (lambda (hug currentdist) (if (eq? currentdist 0)
+					(path-cost (car robot) (cadr robot) (car hug) (cadr hug) ftw (world-board world))
+					(min currentdist (path-cost (car robot) (cadr robot) (car hug) (cadr hug) ftw (world-board world)))
+					)) 0 hugs)
+      )
   )
 
 
