@@ -1,5 +1,5 @@
+(declare (unit search))
 (use srfi-1)
-(use simulate pairing-heap)
 (require-library simulate pairing-heap)
 
 (define moves '(left right up down wait))
