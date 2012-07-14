@@ -26,8 +26,10 @@
 
 
 
- (define (foo x) (let 
- 		((the-world (best-move (file->world x) 1000))) 
+ (define (foo x) (let* 
+ 		((world (file->world x))
+		 (board (world-board world))
+		 (the-world (best-move-random (file->world x) (+ 100 (* (board-height board) (board-width board))) 3)))
  	      (score-world (count-hugs (file->world x)) (vector-ref the-world 2)  (vector-ref the-world 1))))
 
 ;;(test-group "flood4" 
