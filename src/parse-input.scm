@@ -4,7 +4,7 @@
 
 (use srfi-13)
 (use srfi-69)
-(use list-utils sequences)
+(use list-utils)
 (use srfi-1)
 (use vector-lib)
 (require-extension records)
@@ -84,41 +84,44 @@
 
 (define (parse-input . port)
   (define (convert-to-symbol char)
-	   (cond 
-	    ((eq? char #\R) 'robot)
-	    ((eq? char #\#) 'wall)
-	    ((eq? char #\*) 'rock)
-	    ((eq? char #\\) 'hug);;Fuck calling this shit a Lambda
-	    ((eq? char #\L) 'closed-lift)
-	    ((eq? char #\O) 'open-lift)
-	    ((eq? char #\.) 'earth)
-	    ((eq? char #\space) 'empty)
-	    (else (fatal char))
+		(cond 
+		 ((eq? char #\R) 'robot)
+		 ((eq? char #\#) 'wall)
+		 ((eq? char #\*) 'rock)
+		 ((eq? char #\\) 'hug);;Fuck calling this shit a Lambda
+		 ((eq? char #\L) 'closed-lift)
+		 ((eq? char #\O) 'open-lift)
+		 ((eq? char #\.) 'earth)
+		 ((eq? char #\space) 'empty)
+		 (else (fatal char))
 	   )
-	   )
- (let* (
-	 ;;Read the lines, split on empty line
-	 (thelines (let-values (((a b) (span (lambda (x) (not (string=? "" x))) (apply read-lines port)))) (cons a b))
-			 )
+		)
+	(let* (
+				 ;;Read the lines, split on empty line
+				 (thelines (let-values (((a b) (span (lambda (x) (not (string=? "" x)))
+																						 (apply read-lines port))))
+										 (cons a b)))
          (mineinfo (alist->hash-table 
-		    (map (lambda (s) 
-			   (cons (read s) 
-				 (read s))) 
-			 (map open-input-string 
-			      (cdr thelines)
-			      ))))
-	 )
+										(map (lambda (s) 
+													 (cons (read s) 
+																 (read s))) 
+												 (map open-input-string 
+															(cdr thelines)))))
+				 (wwidth (apply max (map (lambda (s) (string-length s)) (car thelines)))))
     (make-world (list->vector (map (lambda (line)
-				   (list->vector (map convert-to-symbol (string->list line)))) (car thelines)))
-		   (hash-table-ref/default mineinfo "Water" 0)
-		   (hash-table-ref/default mineinfo "Flooding" 0)
-		   (hash-table-ref/default mineinfo "Waterproof" 10)
-                   0
-                   0
-                   '()
-		   )
+																		 (list->vector
+																			(map convert-to-symbol
+																					 (string->list
+																						(string-pad-right line wwidth))))) (car thelines)))
+								(hash-table-ref/default mineinfo "Water" 0)
+								(hash-table-ref/default mineinfo "Flooding" 0)
+								(hash-table-ref/default mineinfo "Waterproof" 10)
+								0
+								0
+								'()
+								)
     )
-)
+	)
 
 (define (string->world string)
 	(call-with-input-string string parse-input))
