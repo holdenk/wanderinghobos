@@ -13,20 +13,23 @@
   (simple-heuristic-world initialhugs path world MANHATTANDISTCOST)
     )
 (define (simple-heuristic-world initialhugs path world MANHATTANDISTCOST)
-  ;;Also they give you a lolipop after! OMG Ponies
-  (if (eq? 0 (count-hugs world))
-      ;;We got all of teh hugs
-      (- 
-       (* MANHATTANDISTCOST (manhattan-dist-to-lift world))
-       (score-world initialhugs path world)
-       )
-      ;;We still have hugs
-      (- 
-       (* MANHATTANDISTCOST (manhattan-dist-to-hug world))
-       (score-world initialhugs path world)
-       )
-    )
-)
+ (if (escaped? world)
+     (- (score-world initialhugs path world))
+     ;;Also they give you a lolipop after! OMG Ponies
+     (if (eq? 0 (count-hugs world))
+         ;;We got all of teh hugs
+         (- 
+          (* MANHATTANDISTCOST (manhattan-dist-to-lift world))
+          (score-world initialhugs path world)
+          )
+         ;;We still have hugs
+         (- 
+          (* MANHATTANDISTCOST (manhattan-dist-to-hug world))
+          (score-world initialhugs path world)
+          )
+         )
+     )
+ )
 
 ;;Currently we use fairly simple
 (define heuristic-world fairly-simple-heuristic-world)
