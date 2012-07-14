@@ -163,7 +163,7 @@
           ((up) (list (car location) (- (cadr location) 1)))
           ((down) (list (car location) (+ (cadr location) 1)))
           ((wait) location)
-          (else (error "Unsupported move"))))
+          (else (error "Unsupported move" board direction))))
         (l-x (car location)) (l-y (cadr location))
         (d-x (car destination)) (d-y (cadr destination)))
   (define (move-it)
