@@ -1,8 +1,9 @@
 CSCFLAGS = -O2
 CSC = csc $(CSCFLAGS)
 
+IGNORES = src/main.scm src/test-runner.scm src/loadme.scm src/play-map.scm
 SOURCES = $(shell find src/ -iname \*.scm -or -iname \*.ss)
-NONEXEC_SOURCES = $(filter-out src/main.scm src/test-runner.scm src/loadme.scm, $(SOURCES))
+NONEXEC_SOURCES = $(filter-out $(IGNORES), $(SOURCES))
 TEST_FILES = $(shell find tests/ -iname \*.map)
 
 PRODUCT = lifter
@@ -16,6 +17,9 @@ TEAM_NUM = 0
 all: $(PRODUCT) test
 
 $(PRODUCT): $(addsuffix .o, $(basename $(NONEXEC_SOURCES))) src/main.o
+	$(CSC) -o $@ $^
+
+play-map: $(addsuffix .o, $(basename $(NONEXEC_SOURCES))) src/play-map.o
 	$(CSC) -o $@ $^
 
 package:

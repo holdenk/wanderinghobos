@@ -6,3 +6,4 @@ src/*.o
 icfp-*.tgz
 test-results
 test-runner
+play-map
