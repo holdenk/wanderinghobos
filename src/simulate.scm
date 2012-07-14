@@ -64,6 +64,7 @@
 (define (earth? board x y) (equal? (board-ref board x y) 'earth))
 (define (wall? board x y) (equal? (board-ref board x y) 'wall))
 (define (hug? board x y) (equal? (board-ref board x y) 'hug))
+(define (lift? board x y) (or (open-lift? board x y) (closed-lift? board x-y)))
 
 (define (not-exists? board x y) (not (board-ref board x y)))
 (define (exists? board x y) (board-ref board x y))
@@ -187,6 +188,15 @@
     board)
    (error "AIN'T GOT NO ROBOT?!?"))))
 
+(define (find-lift-board board)
+ (call-with-current-continuation
+  (lambda (k)
+   (for-each-board-index 
+    (lambda (x y) (when (lift? board x y) (k (list x y))))
+    board)
+   (error "AIN'T GOT NO LIFT?!? WE SHOULD BE DONE!"))))
+
+
 (define (find-hugs-board board)
   (vector-fold (lambda (y hugs vector) 
 		 (vector-fold (lambda (x hugs element)
@@ -208,6 +218,10 @@
 
 (define (find-hugs world)
  (find-hugs-board (world-board world)))
+
+(define (find-lift world)
+ (find-lift-board (world-board world)))
+
 
 (define (move-robot world direction)
  (let ((board (move-robot-board (world-board world) direction)))

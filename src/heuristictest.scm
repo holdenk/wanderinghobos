@@ -54,5 +54,12 @@
 	    (test 1 (manhattan-dist-to-hug heuristictestworld5))
 )
 (test-group "score-world"
-	    (test #t (number? (score-world heuristictestworld1)))
+	    (test #t (number? (score-world 1 (list ) heuristictestworld1)))
+	    (test 1 (- (score-world 1 (list ) heuristictestworld1)
+		  (score-world 1 (list up) heuristictestworld1))
+		  )
+	    (test 0 (- (score-world 1 (list ) heuristictestworld1)
+		  (score-world 1 (list wait) heuristictestworld1))
+		  )
+
 )
