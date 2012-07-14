@@ -125,7 +125,7 @@
               falling-rocks)))))
 
 (define (robot-underwater? world)
- (> (cadr (find-robot world))
+ (= (cadr (find-robot world))
     (- (board-height (world-board world))
        (world-water world))))
 
@@ -151,11 +151,11 @@
 
 (define (i-am-dead? world)
  (let ((robot (find-robot world)))
-  (any 
-   (lambda (location) 
-    (and (= (car location) (car robot))
-       (= (car location) (- (cadr robot) 1))))
-   (world-rocks world))))
+  (or (any (lambda (location) 
+           (and (= (car location) (car robot))
+              (= (car location) (- (cadr robot) 1))))
+          (world-rocks world))
+     (< (world-waterproof world) (world-underwater world)))))
 
 (define (move-robot-board board direction)
  (if (equal? direction 'abort)
