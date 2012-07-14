@@ -3,7 +3,6 @@
 (use list-utils)
 (use srfi-1) 
 (use test)
-(use sequences)
 
 (define quantum-world
   (dry-world

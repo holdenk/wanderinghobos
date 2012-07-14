@@ -2,7 +2,6 @@
 (declare (uses simulate pairing-heap))
 (use srfi-1)
 (use list-utils)
-(use sequences)
 
 
 (define moves '(left right up down wait))
