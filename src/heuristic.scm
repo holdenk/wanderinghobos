@@ -31,6 +31,28 @@
      )
  )
 
+;;Hugs remaining and makes sexy
+(define (crazy-heuristic-world initialhugs path world)
+  (let ((hugcount (count-hugs world)))
+    (if (escaped? world)
+	(- (score-world initialhugs path world))
+	;;Also they give you a lolipop after! OMG Ponies
+	(if (eq? 0 hugcount)
+	    ;;We got all of teh hugs
+	    (- 
+	     (* MANHATTANDISTCOST (manhattan-dist-to-lift world))
+	     (score-world initialhugs path world)
+	     )
+	    ;;We still have hugs
+	    (- 
+	     (/ hugcount (manhattan-dist-to-hug world))
+	     (score-world initialhugs path world)
+	     )
+	    )
+	)
+    )
+)
+
 ;;Currently we use fairly simple
 (define heuristic-world fairly-simple-heuristic-world)
 
