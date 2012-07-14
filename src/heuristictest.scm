@@ -1,5 +1,5 @@
 (declare (unit heuristictest))
-(declare (uses parse-input))
+(declare (uses parse-input dog))
 (declare (uses simulate))
 (declare (uses heuristic))
 (use test)
@@ -29,6 +29,12 @@ L  .\\#
 #  R #
 #\\ * #
 L  .\\#
+######"))
+
+(define simple-world-test-1
+ (string->world
+  "#. *R#
+## \\.#
 ######"))
 
 
@@ -106,6 +112,9 @@ L  .\\#
 	    (test 1 (manhattan-dist-to-hug heuristictestworld5))
 	    (test 1 (manhattan-dist-to-hug world-test-2))
 	    (test 2 (manhattan-dist-to-hug world-test-1))
+)
+(test-group "floydwarshall"
+	    (test (list ) (hobofloydwarshall (world-board simple-world-test-1)))
 )
 (test-group "score-world"
 	    (test #t (number? (score-world 1 (list ) heuristictestworld1)))
