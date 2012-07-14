@@ -69,7 +69,7 @@
                   (world-iteration world)
                   (world-rocks world))))
 
-(define (parse-input)
+(define (parse-input . port)
   (define (convert-to-symbol char)
 	   (cond 
 	    ((eq? char #\R) 'robot)
@@ -85,7 +85,7 @@
 	   )
  (let* (
 	 ;;Read the lines, split on empty line
-	 (thelines (let-values (((a b) (span (lambda (x) (not (string=? "" x))) (read-lines)))) (cons a b))
+	 (thelines (let-values (((a b) (span (lambda (x) (not (string=? "" x))) (apply read-lines port)))) (cons a b))
 			 )
          (mineinfo (alist->hash-table 
 		    (map (lambda (s) 
@@ -106,3 +106,5 @@
 		   )
     )
 )
+
+(define (string->world string) (call-with-input-string string parse-input))
