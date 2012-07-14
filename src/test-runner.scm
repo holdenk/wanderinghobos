@@ -2,7 +2,7 @@
 (declare (uses fail-safe heuristic heuristictest))
 (declare (uses simulate simulatetest))
 (use test)
-(use list-utils)
+(use list-utils sequences)
 (use srfi-13)
 (test-group "single-step"
 						(foldl (lambda (acc name)
