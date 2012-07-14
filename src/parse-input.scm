@@ -114,7 +114,7 @@
 
 (define-record-printer (world world port)
  (begin
-  (format port "(")
+  (format port "(~%")
   (vector-for-each (lambda (i l)
                     (vector-for-each (lambda (i l2) (display (symbol-to-char l2) port)) l)
                     (display "\n" port))
