@@ -1,6 +1,6 @@
 (declare (unit simulate))
 
-(require-library parse-input)
+(declare (uses parse-input))
 (use test srfi-1 posix)
 
 (define (for-each-n f n)

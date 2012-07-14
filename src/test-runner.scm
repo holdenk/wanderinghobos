@@ -1,0 +1,8 @@
+(declare (uses parse-input))
+(declare (uses fail-safe))
+(declare (uses simulate))
+(use test)
+(foldl (lambda (name)
+				 (let ((pre (file->world (string-concatenate name ".map")))
+							 (post (file->world (string-concatenate name ".res"))))
+					 (test post (simulate pre)))))
