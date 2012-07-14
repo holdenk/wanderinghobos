@@ -59,3 +59,23 @@
                (make-path (edge-weight e) (list e))
                (make-path +inf.0 empty)))))))
 
+
+;;(define hobopath (for*/matrix 
+;;     n n
+;;(define (floyd-warhsall-hobo board)
+;;  (define (n (* (board-width board) (board-height board))))
+;;  
+;;)
+
+(define (board2shit board)
+  (define g (create-graph))
+  (define w (board-width board))
+  (define h (board-hieght board))
+  (define (add-stuff mh mw)
+    (if (> mw w)
+	(add-stuff (+ 1 mh) 0)
+	(if (> mh h))
+	  "done"
+	  (graph-add! g (+ (* board-width mh)
+    )
+)
