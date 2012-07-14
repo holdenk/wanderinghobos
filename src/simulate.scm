@@ -64,7 +64,7 @@
 (define (earth? board x y) (equal? (board-ref board x y) 'earth))
 (define (wall? board x y) (equal? (board-ref board x y) 'wall))
 (define (hug? board x y) (equal? (board-ref board x y) 'hug))
-(define (lift? board x y) (or (open-lift? board x y) (closed-lift? board x-y)))
+(define (lift? board x y) (or (open-lift? board x y) (closed-lift? board x y)))
 
 (define (not-exists? board x y) (not (board-ref board x y)))
 (define (exists? board x y) (board-ref board x y))
@@ -273,6 +273,6 @@
 (define (escaped? world) (= (count-lifts world) 0))
 
 (define (done? world path)
- (if (and (eq? 'abort (car path)) (escaped? world))
+ (if (or (eq? 'abort (car path)) (escaped? world))
      #t
      #f))
