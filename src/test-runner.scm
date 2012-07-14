@@ -8,7 +8,8 @@
 						(foldl (lambda (acc name)
 										 (let ((pre (file->world (string-append name ".map")))
 													 (post (file->world (string-append name ".res"))))
-											 (test (world-board post)
+											 (test name
+														 (world-board post)
 														 (world-board (simulate pre)))))
 									 '()
 									 (command-line-arguments)))
