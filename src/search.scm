@@ -29,7 +29,6 @@
    moves)))
 
 (define (best-moves evaluator world n)
- ;; evaluator :: hugs path world
  (set! *best-node-so-far* #f)
  (let ((heap 
         (let* ((initial-hugs (count-hugs world))
@@ -39,8 +38,8 @@
                                  (pairing-heap-empty
                                   (lambda (a b)
                                    (cond
-                                    ((fx< (vector-ref a 0) (vector-ref b 0)) -1)
-                                    ((fx= (vector-ref a 0) (vector-ref b 0)) 0)
+                                    ((< (vector-ref a 0) (vector-ref b 0)) -1)
+                                    ((= (vector-ref a 0) (vector-ref b 0)) 0)
                                     (else 1)))))))
           (bestest-best! heap)
           (if (= n 0)
@@ -77,5 +76,5 @@
              (file->world "../tests/contest1.map")
              10))
 
-(define (test2) (best-move (file->world "../tests/contest1.map") 10))
-
+(define (test2) (best-move (file->world "../tests/contest1.map") 30))
+(define (test3) (best-move (file->world "../tests/contest2.map") 30))
