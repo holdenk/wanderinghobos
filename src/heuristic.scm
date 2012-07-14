@@ -39,7 +39,7 @@
   )
 )
 (define (moves-in-path path)
-  (length (filter (lambda (x) (not (eq? x wait))) path))  
+  (length (filter (lambda (x) (not (eq? x 'wait))) path))  
 )
 ;;We don't want to die unless we abort, abortions are FREE
 (define (add-death-cost world)

@@ -56,10 +56,10 @@
 (test-group "score-world"
 	    (test #t (number? (score-world 1 (list ) heuristictestworld1)))
 	    (test 1 (- (score-world 1 (list ) heuristictestworld1)
-		  (score-world 1 (list up) heuristictestworld1))
+		  (score-world 1 (list 'up) heuristictestworld1))
 		  )
 	    (test 0 (- (score-world 1 (list ) heuristictestworld1)
-		  (score-world 1 (list wait) heuristictestworld1))
+		  (score-world 1 (list 'wait) heuristictestworld1))
 		  )
 
 )
