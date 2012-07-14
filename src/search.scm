@@ -23,7 +23,7 @@
           (moves (cons move (vector-ref cost&world&moves 2))))
      (if world1
          (let ((world2 (simulate world1)))
-          (pairing-heap-insert (vector (evaluator world2 moves) world2 moves) heap))
+          (pairing-heap-insert (vector (evaluator moves world2) world2 moves) heap))
          heap)))
    heap1
    moves)))
