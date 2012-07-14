@@ -64,20 +64,21 @@
        (lambda (heap move)
         (let ((world1 (move-robot (vector-ref cost&world&moves 1) move))
               (moves (cons move (vector-ref cost&world&moves 2))))
-         (if (and world1 (not (i-am-dead? world1)))
-             (if (done? world1 moves)
-                 (begin (update-best! (vector (evaluator moves world1) world1 moves)) heap)
-                 (let* ((world2 (simulate world1))
-                        (e (evaluator moves world2))
-                        (robot (find-robot world2))
-                        (previous (if already-seen
-                                      (board-ref already-seen (car robot) (cadr robot))
-                                      +inf.0)))
-                  (if (< previous e)
-                      heap
-                      (begin 
-                       (when already-seen (board-set! already-seen (car robot) (cadr robot) e))
-                       (pairing-heap-insert (vector e world2 moves) heap)))))
+         (if world1
+             (let* ((world2 (simulate world1))
+                    (e (evaluator moves world2))
+                    (robot (find-robot world2))
+                    (previous (if already-seen
+                                  (board-ref already-seen (car robot) (cadr robot))
+                                  +inf.0)))
+              (cond ((i-am-dead? world2) heap)
+                    ((done? world2 moves)
+                     (update-best! (vector (evaluator moves world2) world2 moves))
+                     heap)
+                    ((< previous e) heap)
+                    (else
+                     (when already-seen (board-set! already-seen (car robot) (cadr robot) e))
+                     (pairing-heap-insert (vector e world2 moves) heap))))
              heap)))
        heap1
        (if random?
