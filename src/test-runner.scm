@@ -1,5 +1,5 @@
 (declare (uses parse-input))
-(declare (uses fail-safe heuristic heuristictest))
+(declare (uses failsafe heuristic heuristictest))
 (declare (uses simulate simulatetest))
 (use test)
 (use list-utils sequences)

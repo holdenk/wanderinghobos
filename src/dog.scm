@@ -67,15 +67,3 @@
 ;;  
 ;;)
 
-(define (board2shit board)
-  (define g (create-graph))
-  (define w (board-width board))
-  (define h (board-hieght board))
-  (define (add-stuff mh mw)
-    (if (> mw w)
-	(add-stuff (+ 1 mh) 0)
-	(if (> mh h))
-	  "done"
-	  (graph-add! g (+ (* board-width mh)
-    )
-)

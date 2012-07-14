@@ -97,9 +97,12 @@
       (pairing-heap-insert *best-node-so-far* heap)
       heap)))
 
+;;Todo: Die quickly in a hugless world
 (define (best-move world n) 
- (pairing-heap-min (best-moves heuristic-world world n #f)))
+      (pairing-heap-min (best-moves heuristic-world world n #f))
+)
 
+;;Todo: Die quickly in a hugless world
 (define (best-move-random world n restarts) 
  (map-n (lambda _ 
          (let ((r (pairing-heap-min (best-moves heuristic-world world n #t))))

@@ -5,3 +5,4 @@ test
 vector-lib
 pairing-heap
 sequences
+random-bsd

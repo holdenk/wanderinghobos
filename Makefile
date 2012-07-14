@@ -49,7 +49,7 @@ clean:
 
 test-results/%.result: tests/%.map $(PRODUCT)
 	mkdir -p test-results
-	cat $< | ./$(PRODUCT) > $@
+	cat $< | ./$(PRODUCT) -iamohsopretty -localmode> $@
 
 test-results/simulate-tests: $(TEST_FILES) test-runner
 	mkdir -p test-results
