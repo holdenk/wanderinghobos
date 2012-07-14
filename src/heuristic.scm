@@ -4,25 +4,35 @@
 (declare (uses parse-input))
 (use vector-lib)
 
-(define (heuristic-world initialhugs path world)
+(define (fairly-simple-heuristic-world initialhugs path world)
   (define MANHATTANDISTCOST 1.1)
+  (simple-heuristic-world initialhugs path world MANHATTANDISTCOST)
+    )
+(define (very-simple-heuristic-world initialhugs path world)
+  (define MANHATTANDISTCOST 1)
+  (simple-heuristic-world initialhugs path world MANHATTANDISTCOST)
+    )
+(define (simple-heuristic-world initialhugs path world MANHATTANDISTCOST)
  (if (escaped? world)
      (- (score-world initialhugs path world))
-  ;;Also they give you a lolipop after! OMG Ponies
-  (if (eq? 0 (count-hugs world))
-      ;;We got all of teh hugs
-      (- 
-       (* MANHATTANDISTCOST (manhattan-dist-to-lift world))
-       (score-world initialhugs path world)
-       )
-      ;;We still have hugs
-      (- 
-       (* MANHATTANDISTCOST (manhattan-dist-to-hug world))
-       (score-world initialhugs path world)
-       )
-    )
-  )
+     ;;Also they give you a lolipop after! OMG Ponies
+     (if (eq? 0 (count-hugs world))
+         ;;We got all of teh hugs
+         (- 
+          (* MANHATTANDISTCOST (manhattan-dist-to-lift world))
+          (score-world initialhugs path world)
+          )
+         ;;We still have hugs
+         (- 
+          (* MANHATTANDISTCOST (manhattan-dist-to-hug world))
+          (score-world initialhugs path world)
+          )
+         )
+     )
  )
+
+;;Currently we use fairly simple
+(define heuristic-world fairly-simple-heuristic-world)
 
 (define (score-world initialhugs path world)
   (let ((hugvalue (if (and (not (null? path)) 
