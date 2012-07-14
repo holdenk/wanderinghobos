@@ -23,8 +23,13 @@
 
 (define (map-matrix f m) (map-vector (lambda (v) (map-vector f v)) m))
 
+(define (for-each-matrix f m) (for-each-vector (lambda (v) (for-each-vector f v)) m))
+
 (define (map-indexed-matrix f m)
  (map-indexed-vector (lambda (r i) (map-indexed-vector (lambda (c j) (f c j i)) r)) m))
+
+(define (for-each-indexed-vector f v)
+ (for-each-n (lambda (i) (f (vector-ref v i) i)) (vector-length v)))
 
 (define (map-indexed-vector f v)
  ;; needs work: Won't work correctly when F is nondeterministic.
@@ -36,6 +41,11 @@
      (f (vector-ref v i) i)))
    (vector-length v))
   u))
+
+(define (for-each-indexed-matrix f m)
+ (for-each-indexed-vector
+  (lambda (r i) (for-each-indexed-vector (lambda (c j) (f c i j)) r))
+  m))
 
 (define (reverse-vector v) (list->vector (reverse (vector->list v))))
 
@@ -65,6 +75,8 @@
 (define (wall? board x y) (equal? (board-ref board x y) 'wall))
 (define (hug? board x y) (equal? (board-ref board x y) 'hug))
 (define (lift? board x y) (or (open-lift? board x y) (closed-lift? board x y)))
+(define (trampoline-in? board x y) (is-trampoline-in? (board-ref board x y)))
+(define (trampoline-out? board x y) (is-trampoline-out? (board-ref board x y)))
 
 (define (not-exists? board x y) (not (board-ref board x y)))
 (define (exists? board x y) (board-ref board x y))
@@ -157,6 +169,30 @@
           (world-rocks world))
      (< (world-waterproof world) (world-underwater world)))))
 
+(define (find-trampolines board)
+ (let ((trampolines '()))
+  (for-each-indexed-matrix 
+   (lambda (e y x) (when (is-trampoline? e) (set! trampolines (cons (list x y) trampolines))))
+   board)
+  trampolines))
+
+(define (find-anus-for-mouth board mouth)
+ (call-with-current-continuation
+  (lambda (k)
+   (for-each-indexed-matrix 
+    (lambda (e y x) (when (and (is-trampoline-out? e) (member  mouth (vector-ref e 2)))
+                (k (list x y))))
+    board)
+   #f)))
+
+(define (find-mouths-for-anus board anus)
+ (let ((trampolines '()))
+  (for-each-indexed-matrix 
+   (lambda (e y x) (when (and (is-trampoline-in? e) (equal? (vector-ref e 2) anus))
+               (set! trampolines (cons (list x y) trampolines))))
+   board)
+  trampolines))
+
 (define (move-robot-board board direction)
  (if (equal? direction 'abort)
      board
@@ -179,6 +215,17 @@
                    (open-lift? board d-x d-y)
                    (earth? board d-x d-y)))
              (move-it))
+            ((trampoline-in? board d-x d-y)
+             (let ((f (find-anus-for-mouth board (vector-ref (board-ref board d-x d-y) 1))))
+              (foldl (lambda (board l) (board-set! board (car l) (cadr l) 'empty))
+                     (board-set!
+                      (board-set! 
+                       (board-set! 
+                        (copy-board board)
+                        d-x d-y 'empty)
+                       l-x l-y 'empty)
+                      (car f) (cadr f) 'robot)
+                     (find-mouths-for-anus board (vector-ref (board-ref board d-x d-y) 2)))))
             ((and (= d-x (+ l-x 1))
                 (= d-x d-y)
                 (rock? board d-x d-y)
@@ -207,22 +254,14 @@
     board)
    (error "AIN'T GOT NO LIFT?!? WE SHOULD BE DONE!"))))
 
-
 (define (find-hugs-board board)
-  (vector-fold (lambda (y hugs vector) 
-		 (vector-fold (lambda (x hugs element)
-				(if (eq? element 'hug)
-				    (cons (list x y) hugs)
-				    hugs
-				    )
-				)
-			      hugs
-			      vector
-			      )
-
-		 )
-	       (list ) board)
-  )
+ (vector-fold 
+  (lambda (y hugs vector) 
+   (vector-fold (lambda (x hugs element) (if (eq? element 'hug)
+                                        (cons (list x y) hugs)
+                                        hugs))
+                hugs vector))
+  '() board))
 
 (define (find-robot world)
  (find-robot-board (world-board world)))
