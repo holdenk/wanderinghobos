@@ -2,6 +2,7 @@
 ;;they taste like rasins
 (declare (unit heuristic))
 (declare (uses parse-input))
+(use vector-lib)
 
 (define (heuristic-world initialhugs path world)
   (define MANHATTANDISTCOST 1)
@@ -9,13 +10,11 @@
   (if (eq? 0 (count-hugs world))
       ;;We got all of teh hugs
       (- 
-       0
        (* MANHATTANDISTCOST (manhattan-dist-to-lift world))
        (score-world initialhugs path world)
        )
       ;;We still have hugs
       (- 
-       0
        (* MANHATTANDISTCOST (manhattan-dist-to-hug world))
        (score-world initialhugs path world)
        )
@@ -30,18 +29,26 @@
 			  75
 			  25
 			  )
-		      )))
-    (score-world-with-hug-value initialhugs path world hugvalue))
+		      ))
+	(path-length (moves-in-path path))
+	(board (world-board world))
+	)
+    ;;Section 3.1 resource limits
+   (if (>= path-length (* (board-height board) (board-width width)))
+	-inf.0
+	(score-world-with-hug-value initialhugs path world hugvalue path-length))
+    )
 )
 
-(define (score-world-with-hug-value initialhugs path world hugvalue)
+(define (score-world-with-hug-value initialhugs path world hugvalue path-length)
     (-
      (* hugvalue (- initialhugs (count-hugs world)))
-     (moves-in-path path)
+     path-length
      (add-death-cost world)
      )
     )
 
+;;Todo: make sure "wait" and "todo" don't count to moves-in-path  eh
 (define (moves-in-path path)
   (length (filter (lambda (x) (not (or (eq? x 'wait)
 				       (eq? x 'abort)))) path))  
