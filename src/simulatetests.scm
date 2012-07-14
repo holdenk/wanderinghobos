@@ -4,6 +4,7 @@
 (use srfi-1) 
 (use test)
 
+
 (define quantum-world
   (dry-world
    '#(
