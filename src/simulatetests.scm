@@ -1,12 +1,8 @@
 (declare (unit simulatetest))
-(require-library parse-input)
-(require-library simulate)
-(require-library heuristic)
-(require-library search)
+(declare (uses parse-input simulate heuristic search))
 (use list-utils)
 (use srfi-1) 
 (use test)
-(use sequences)
 
 (define quantum-world
   (dry-world

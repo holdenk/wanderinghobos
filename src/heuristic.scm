@@ -1,7 +1,7 @@
 ;;yay heuristics!
 ;;they taste like rasins
 (declare (unit heuristic))
-(require-library parse-input)
+(declare (uses parse-input))
 
 (define (heuristic-world initialhugs path world)
   (define MANHATTANDISTCOST 1)
