@@ -2,6 +2,7 @@
 ;;they taste like rasins
 (declare (unit heuristic))
 (declare (uses parse-input))
+(use vector-lib)
 
 (define (heuristic-world initialhugs path world)
   (define MANHATTANDISTCOST 1)
