@@ -3,10 +3,10 @@
 (require-library simulate)
 (require-library heuristic)
 (require-library search)
-(require-library list-utils)
+(use list-utils)
 (use srfi-1) 
 (use test)
-
+(use sequences)
 
 (define quantum-world
   (dry-world
