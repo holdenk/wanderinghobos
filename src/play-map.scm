@@ -4,19 +4,11 @@
 (declare (uses simulate))
 (use list-utils sequences vector-lib)
 (let* ((w (file->world (car (command-line-arguments))))
+       (board (world-board w))
        (initialhugs (count-hugs w))
-       (wheight (vector-length (world-board w)))
-       (wwidth (car (vector->list
-		     (vector-map (lambda (i e) (vector-length e))
-				 (world-board w)))))
-       (themoves (reverse (vector-ref (best-move-random
-				       w
-				       (+ 250
-					  (* 3
-					     (* wheight
-						wwidth)))
-				       2)
-				      2))))
+       (wheight (board-height board))
+       (wwidth  (board-width board))
+       (themoves (reverse (vector-ref (best-move-random-with-no-repeats  w (+ 250 (* 3 (*  wwidth))) 3) 2))))
   (display w)
   (foldl (lambda (s m)
 	   ;;ouput the list of murh costs
@@ -46,5 +38,8 @@
 	       (display r)
 	       r))))
 	 w
-	 themoves))
+	 themoves)
+  (display "\n")
+  (display (output-moves (reverse themoves)))
+)
 (display "\n")
