@@ -133,7 +133,9 @@
  (let ((new-board (simulate-board (world-board world))))
   (make-world (car new-board)
               (+ (world-water world)
-                 (+ (if (= (modulo (world-iteration world) (world-flooding world)) 0)
+                 (+ (if (and ;; Fuck, Chicken isn't IEEE 754 complaint
+                         (not (zero? (world-flooding world)))
+                         (= (modulo (world-iteration world) (world-flooding world)) 0))
                         1
                         0)))
               (world-flooding world)

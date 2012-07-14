@@ -15,7 +15,7 @@
 (define (best-moves1 evaluator heap)
  (let ((cost&world&moves (pairing-heap-min heap))
        (heap1 (pairing-heap-remove-min heap)))
-  (fold
+  (foldl
    (lambda (heap move)
     (let ((world1 (move-robot (vector-ref cost&world&moves 1) move))
           (moves (cons move (vector-ref cost&world&moves 2))))
@@ -57,4 +57,9 @@
    (lambda (a) 
     (format #t "Node ~a ~a~%" (vector-ref a 0) (vector-ref a 2))
     (world-pp (vector-ref a 1)))
-  (pairing-heap->list (best-moves heuristic-world w1 10))))
+  (pairing-heap->list (best-moves (lambda _ (display _)(newline) (apply heuristic-world _)) w1 10))))
+
+(define (test1)
+ (best-moves (lambda _ (display _)(newline) (apply heuristic-world _)) 
+             (file->world "../tests/contest1.map")
+             10))
