@@ -4,8 +4,6 @@
 (declare (uses parse-input))
 (use vector-lib)
 
-(define heuristic-world fairly-simple-heuristic-world)
-
 (define (fairly-simple-heuristic-world initialhugs path world)
   (define MANHATTANDISTCOST 1.1)
   (simple-heuristic-world initialhugs path world MANHATTANDISTCOST)
@@ -29,6 +27,9 @@
        )
     )
 )
+
+;;Currently we use fairly simple
+(define heuristic-world fairly-simple-heuristic-world)
 
 (define (score-world initialhugs path world)
   (let ((hugvalue (if (and (not (null? path)) 
