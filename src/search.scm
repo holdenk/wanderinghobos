@@ -3,8 +3,7 @@
 (use srfi-1)
 (use list-utils)
 
-
-(define moves '(left right up down wait))
+(define moves '(left right up down wait abort))
 
 (define *best-node-so-far* #f)
 
@@ -20,9 +19,11 @@
    (lambda (heap move)
     (let ((world1 (move-robot (vector-ref cost&world&moves 1) move))
           (moves (cons move (vector-ref cost&world&moves 2))))
-     (if world1
-         (let ((world2 (simulate world1)))
-          (pairing-heap-insert (vector (evaluator moves world2) world2 moves) heap))
+     (if (and world1 (not (i-am-dead? world1)))
+         (if (done? world1 moves)
+             heap
+             (let ((world2 (simulate world1)))
+              (pairing-heap-insert (vector (evaluator moves world2) world2 moves) heap)))
          heap)))
    heap1
    moves)))
@@ -38,7 +39,12 @@
    (bestest-best! heap)
    (if (= n 0)
        heap
-       (loop (- n 1) (best-moves1 evaluator1 heap))))))
+       (loop (- n 1) (best-moves1 evaluator1 heap)))))
+ (bestest-best! heap)
+ (pairing-heap-insert *best-node-so-far* heap))
+
+(define (best-move world n) 
+ (pairing-heap-min (best-moves heuristic-world world n)))
 
 (define (pairing-heap->list heap)
  (let loop ((heap heap) (r '()))
@@ -64,3 +70,5 @@
  (best-moves (lambda _ (display _)(newline) (apply heuristic-world _)) 
              (file->world "../tests/contest1.map")
              10))
+
+(define (test2) (best-move (file->world "../tests/contest1.map") 10))
