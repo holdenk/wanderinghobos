@@ -27,18 +27,17 @@
 
 
  (define (foo x) (let 
- 		((the-world (best-move (file->world x) 100))) 
- 	      (score-world (count-hugs (vector-ref the-world 1)) (vector-ref the-world 2)  (vector-ref the-world 1))))
+ 		((the-world (best-move (file->world x) 1000))) 
+ 	      (score-world (count-hugs (file->world x)) (vector-ref the-world 2)  (vector-ref the-world 1))))
 
 (test-group "some-runs" 
-	    (test 212 (output-moves (reverse (vector-ref (best-move (file->world "tests/contest1.map") 100) 2))))
+	    (test 212 (foo "tests/contest1.map"))
 	    (test 281 (foo "tests/contest2.map"))
-	    (test 275 (vector-ref (best-move (file->world "tests/contest3.map") 100) 0))
-	    (test 575 (vector-ref (best-move (file->world "tests/contest4.map") 100) 0))
-	    (test 1303 (vector-ref (best-move (file->world "tests/contest5.map") 100)0))
-	    (test 1177 (vector-ref (best-move (file->world "tests/contest6.map") 100)0))
-	    (test 869 (vector-ref (best-move (file->world "tests/contest7.map") 100)0))
-	    (test 1973 (vector-ref (best-move (file->world "tests/contest8.map") 100)0))
-	    (test 3093 (vector-ref (best-move (file->world "tests/contest9.map") 100)0))
-	    (test 3643 (vector-ref (best-move (file->world "tests/contest10.map") 100)0))
-)
+	    (test 275 (foo "tests/contest3.map"))
+	    (test 575 (foo "tests/contest4.map"))
+	    (test 1303 (foo "tests/contest5.map"))
+	    (test 1177 (foo "tests/contest6.map"))
+	    (test 869 (foo "tests/contest7.map"))
+	    (test 1973 (foo "tests/contest8.map"))
+	    (test 3093 (foo "tests/contest9.map"))
+	    (test 3643 (foo "tests/contest10.map")))
