@@ -178,7 +178,7 @@
                           (else (error "Bad")))))
                        (remove (lambda (a) (equal? a "")) (cdr thelines))))
         (wwidth (apply max (map (lambda (s) (string-length s)) (car thelines))))
-        (trampolines (map (lambda (a) (cdr a)) (filter '() (lambda (e) (equal? (car e) 'Trampoline)) mineinfo))))
+        (trampolines (map (lambda (a) (cdr a)) (filter (lambda (e) (equal? (car e) 'Trampoline)) mineinfo))))
   (make-world (map-matrix
                (lambda (e)
                 (cond  ((is-trampoline-in? e)
@@ -187,7 +187,7 @@
                          (set-trampoline-in-out! e (cdr trampoline))
                          e))
                        ((is-trampoline-out? e)
-                        (let ((trampolines (filter '() (lambda (t) (equal? (cdr t) (trampoline-name e))) trampolines)))
+                        (let ((trampolines (filter (lambda (t) (equal? (cdr t) (trampoline-name e))) trampolines)))
                          (unless trampolines (error "Missing trampoline" (trampoline-name e) trampolines))
                          (set-trampoline-out-in! e (map car trampolines))
                          e))
