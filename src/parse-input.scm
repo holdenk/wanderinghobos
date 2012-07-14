@@ -104,7 +104,6 @@
                         (map open-input-string 
                              (cdr thelines)))))
         (wwidth (apply max (map (lambda (s) (string-length s)) (car thelines)))))
-  (pp (hash-table->alist mineinfo))(newline)
   (make-world (list->vector (map (lambda (line)
                                   (list->vector
                                    (map convert-to-symbol
