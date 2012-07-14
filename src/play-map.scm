@@ -9,7 +9,14 @@
 			 (wwidth (car (vector->list
 										 (vector-map (lambda (i e) (vector-length e))
 																 (world-board w)))))
-			 (themoves (reverse (vector-ref (best-move-random-with-no-repeats w (+ 250 (* 3 (* wheight wwidth))) 2) 2))))
+			 (themoves (reverse (vector-ref (best-move-random-with-no-repeats
+																			 w
+																			 (+ 250
+																					(* 3
+																						 (* wheight
+																								wwidth)))
+																			 2)
+																			2))))
 	(display w)
 	(foldl (lambda (s m)
 					 ;;ouput the list of murh costs
