@@ -113,8 +113,12 @@ L  .\\#
 	    (test 1 (manhattan-dist-to-hug world-test-2))
 	    (test 2 (manhattan-dist-to-hug world-test-1))
 )
+(define hfwswt1 (hobofloydwarshall (world-board simple-world-test-1)))
 (test-group "floydwarshall"
-	    (test (list ) (hobofloydwarshall (world-board simple-world-test-1)))
+	    (test 0 (path-cost 0 0 0 0 hfwswt1 (world-board simple-world-test-1)))
+	    (test 0 (path-cost 1 1 1 1 hfwswt1 (world-board simple-world-test-1)))
+	    (test 0 (path-cost 1 1 1 1 hfwswt1 (world-board simple-world-test-1)))
+	    (test 1 (path-cost 0 0 1 0 hfwswt1 (world-board simple-world-test-1)))
 )
 (test-group "score-world"
 	    (test #t (number? (score-world 1 (list ) heuristictestworld1)))
