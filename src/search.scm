@@ -44,4 +44,3 @@
    (world-pp (vector-ref a 1)))
  (pairing-heap->list (best-moves (lambda _ 1) faq-2-1 10))))
 
-
