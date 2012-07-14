@@ -11,13 +11,13 @@
       (- 
        0
        (* MANHATTANDISTCOST (manhattan-dist-to-lift world))
-       (score-world intialhugs path world)
+       (score-world initialhugs path world)
        )      
       ;;We still have hugs
       (- 
        0
        (* MANHATTANDISTCOST (manhattan-dist-to-hug world))
-       (score-world intialhugs path world)
+       (score-world initialhugs path world)
        )
     )
 )
@@ -39,7 +39,7 @@
   )
 )
 (define (moves-in-path path)
-  (length (filter (lambda (x) (not (eq? x wait))) path))  
+  (length (filter (lambda (x) (not (eq? x 'wait))) path))  
 )
 ;;We don't want to die unless we abort, abortions are FREE
 (define (add-death-cost world)

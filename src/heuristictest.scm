@@ -34,7 +34,15 @@
   '#(#(hug rock earth empty robot)
      #(wall wall wall empty hug)
      #(wall wall wall wall wall))))
-
+(define heuristictestworldDead
+  (simulate (move-robot  
+	     (dry-world
+	      '#(#(wall rock earth hug wall)
+		 #(wall empty empty rock wall)
+		 #(wall empty robot empty wall)
+		 #(wall wall wall wall wall)))
+	     'left))
+)
 
 
 (test-group "find-the-robot"
@@ -56,10 +64,10 @@
 (test-group "score-world"
 	    (test #t (number? (score-world 1 (list ) heuristictestworld1)))
 	    (test 1 (- (score-world 1 (list ) heuristictestworld1)
-		  (score-world 1 (list up) heuristictestworld1))
+		  (score-world 1 (list 'up) heuristictestworld1))
 		  )
 	    (test 0 (- (score-world 1 (list ) heuristictestworld1)
-		  (score-world 1 (list wait) heuristictestworld1))
+		  (score-world 1 (list 'wait) heuristictestworld1))
 		  )
-
+	    (test +inf.0 (heuristic-world 1 (list ) heuristictestworldDead))
 )
