@@ -208,17 +208,3 @@
         (call-with-input-string string parse-input))
 (define (file->world file-name)
         (call-with-input-file file-name parse-input))
-
-(string->world "###########
-#.A..R....#
-#.*******.#
-#.\\\\\\\\\\\\\\.#
-#.       .#
-#..*\\\\\\*..#
-#2#*\\\\\\*#.#
-#########L#
-
-Water 1
-Flooding 8 
-Waterproof 5
-Trampoline A in 2")
