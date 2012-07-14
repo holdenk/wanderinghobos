@@ -143,4 +143,3 @@
           (world-iteration world)
           (world-rocks world))
   (format port ")")))
-
