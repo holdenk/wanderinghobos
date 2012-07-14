@@ -9,13 +9,11 @@
   (if (eq? 0 (count-hugs world))
       ;;We got all of teh hugs
       (- 
-       0
        (* MANHATTANDISTCOST (manhattan-dist-to-lift world))
        (score-world initialhugs path world)
        )
       ;;We still have hugs
       (- 
-       0
        (* MANHATTANDISTCOST (manhattan-dist-to-hug world))
        (score-world initialhugs path world)
        )
