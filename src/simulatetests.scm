@@ -1,7 +1,10 @@
-(declare (unit heuristictest))
+(declare (unit simulatetest))
 (require-library parse-input)
 (require-library simulate)
 (require-library heuristic)
+(require-library search)
+(require-library list-utils)
+(use srfi-1) 
 (use test)
 
 
@@ -23,3 +26,6 @@
 
 (test-group "test-simulator"
 	    (test (world-board smashed-world) (world-board  (simulate quantum-world))))
+
+(test-group "some-runs"
+	    (test 0 (best-moves heuristic-world (file->world "../tests/contest1.map") 100)))
