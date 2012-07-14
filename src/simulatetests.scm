@@ -10,7 +10,7 @@
    '#(
       #(wall empty robot empty wall)
       #(wall rock  empty rock wall)
-      #(wall rock  empty rock wall)
+      #(open-lift rock  empty rock wall)
       #(wall wall  wall  wall wall))))
 
 (define smashed-world
@@ -18,7 +18,7 @@
    '#(
       #(wall empty robot empty wall)
       #(wall empty empty empty wall)
-      #(wall rock  rock  rock  wall)
+      #(open-lift rock  rock  rock  wall)
       #(wall wall  wall  wall  wall))))
 
 (test-group "test-simulator"

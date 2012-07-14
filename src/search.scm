@@ -1,7 +1,7 @@
 (declare (unit search))
 (declare (uses simulate pairing-heap))
 (use srfi-1)
-(use list-utils sequences random-bsd)
+(use list-utils random-bsd)
 
 ;; Use signal handler, process until interrupt
 ;; Don't go somewhere twice

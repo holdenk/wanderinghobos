@@ -128,21 +128,6 @@
       )
 )
 
-(define (count-hugs world)
-  (count-obj 'hug world)
-)
-(define (count-earth world)
-  (count-obj 'earth world)
-)
-(define (count-obj obj world)
-  (vector-fold (lambda (i count v)
-		(+ count (vector-count (lambda (i e) (eq? obj e)) v))
-		)
-	       0
-	       (world-board world)
-	       )
-)
-
 (define (manhattan-dist-to-hug world)
   (let
       (

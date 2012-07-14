@@ -39,7 +39,6 @@ L  .\\#
 
 
 
-(define (dry-world board) (make-world board +inf.0 +inf.0 +inf.0 0 0 '()))
 (define heuristictestworld1
  (dry-world
   '#(#(wall rock earth empty wall)
@@ -69,6 +68,7 @@ L  .\\#
   '#(#(hug rock earth empty robot)
      #(wall wall wall empty hug)
      #(wall wall wall wall wall))))
+
 (define heuristictestworldDead
   (simulate (move-robot  
 	     (dry-world
@@ -121,7 +121,7 @@ L  .\\#
 	    (test 1 (- (score-world 1 (list ) heuristictestworld1)
 		  (score-world 1 (list 'up) heuristictestworld1))
 		  )
-	    (test 0 (- (score-world 1 (list ) heuristictestworld1)
+	    (test 1 (- (score-world 1 (list ) heuristictestworld1)
 		  (score-world 1 (list 'left) heuristictestworld1))
 		  )
 	    (test +inf.0 (heuristic-world 1 (list ) heuristictestworldDead))
