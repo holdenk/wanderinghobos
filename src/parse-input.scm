@@ -97,9 +97,9 @@
 	 )
     (make-world (list->vector (map (lambda (line)
 				   (list->vector (map convert-to-symbol (string->list line)))) (car thelines)))
-		   (hash-table-ref/default mineinfo "Water" +inf.0)
-		   (hash-table-ref/default mineinfo "Flooding" +inf.0)
-		   (hash-table-ref/default mineinfo "Waterproof" +inf.0)
+		   (hash-table-ref/default mineinfo "Water" 0)
+		   (hash-table-ref/default mineinfo "Flooding" 0)
+		   (hash-table-ref/default mineinfo "Waterproof" 10)
                    0
                    0
                    '()
