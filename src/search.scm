@@ -15,7 +15,7 @@
 (define (best-moves1 evaluator heap)
  (let ((cost&world&moves (pairing-heap-min heap))
        (heap1 (pairing-heap-remove-min heap)))
-  (fold
+  (foldl
    (lambda (heap move)
     (let ((world1 (move-robot (vector-ref cost&world&moves 1) move))
           (moves (cons move (vector-ref cost&world&moves 2))))
