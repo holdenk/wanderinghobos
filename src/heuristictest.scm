@@ -4,6 +4,35 @@
 (declare (uses heuristic))
 (use test)
 
+(define world-test-1
+ (string->world
+  "######
+#. *R#
+#  \\.#
+#\\ * #
+L  .\\#
+######"))
+
+(define world-test-2
+ (string->world
+  "######
+#. * #
+#  \\R#
+#\\ * #
+L  .\\#
+######"))
+
+(define world-test-3
+ (string->world
+  "######
+#. * #
+#  R #
+#\\ * #
+L  .\\#
+######"))
+
+
+
 (define (dry-world board) (make-world board +inf.0 +inf.0 +inf.0 0 0 '()))
 (define heuristictestworld1
  (dry-world
@@ -75,6 +104,8 @@
 	    (test 3 (manhattan-dist-to-hug heuristictestworld3))
 	    (test 0 (manhattan-dist-to-hug heuristictestworld4))
 	    (test 1 (manhattan-dist-to-hug heuristictestworld5))
+	    (test 1 (manhattan-dist-to-hug world-test-2))
+	    (test 2 (manhattan-dist-to-hug world-test-1))
 )
 (test-group "score-world"
 	    (test #t (number? (score-world 1 (list ) heuristictestworld1)))
@@ -88,22 +119,10 @@
 	    (test 75 (score-world 1 (list ) heuristictestworldNoHugsEscaped))
 	    (test 25 (score-world 1 (list ) heuristictestworldNoHugsNotEscaped))
 	    (test 50 (score-world 1 (list 'abort) heuristictestworldNoHugsNotEscaped))
+	    (test 0 (score-world 3 (list ) world-test-1))
+	    (test -1 (score-world 3 (list 'up) world-test-2))
+	    (test 2.2 (heuristic-world 3 (list ) world-test-1))
+	    (test 2.1 (heuristic-world 3 (list 'up) world-test-2))
+	    (test -20.7 (heuristic-world 3 (list 'left) world-test-3))
+
 )
-(define world-test-1
- (string->world
-  "######
-#. *R#
-#  \\.#
-#\\ * #
-L  .\\#
-######"))
-
-(define world-test-2
- (string->world
-  "######
-#. * #
-#  \\R#
-#\\ * #
-L  .\\#
-######"))
-

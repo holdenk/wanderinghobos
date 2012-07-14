@@ -36,7 +36,12 @@
                (evaluator1 (lambda (path world) (evaluator initial-hugs path world))))
          (let loop ((n n) (heap (pairing-heap-insert
                                  (vector (evaluator1 '() world) world '())
-                                 (pairing-heap-empty (lambda (a b) (< (vector-ref a 0) (vector-ref b 0)))))))
+                                 (pairing-heap-empty
+                                  (lambda (a b)
+                                   (cond
+                                    ((fx< (vector-ref a 0) (vector-ref b 0)) -1)
+                                    ((fx= (vector-ref a 0) (vector-ref b 0)) 0)
+                                    (else 1)))))))
           (bestest-best! heap)
           (if (= n 0)
               heap
@@ -49,7 +54,7 @@
 (define (pairing-heap->list heap)
  (let loop ((heap heap) (r '()))
   (if (pairing-heap-empty? heap)
-      (reverse r)
+      r
       (loop (pairing-heap-remove-min heap)
             (cons (pairing-heap-min heap) r)))))
 
@@ -67,8 +72,10 @@
   (pairing-heap->list (best-moves (lambda _ (display _)(newline) (apply heuristic-world _)) w1 10))))
 
 (define (test1)
- (best-moves (lambda _ (display _)(newline) (apply heuristic-world _)) 
+ (best-moves (lambda _ (display (cons (apply heuristic-world _) _))(newline)
+                (apply heuristic-world _))
              (file->world "../tests/contest1.map")
              10))
 
 (define (test2) (best-move (file->world "../tests/contest1.map") 10))
+

@@ -4,7 +4,7 @@
 
 (use srfi-13)
 (use srfi-69)
-(use list-utils sequences)
+(use list-utils)
 (use srfi-1)
 (use vector-lib)
 (require-extension records)
