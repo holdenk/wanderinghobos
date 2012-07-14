@@ -2,7 +2,7 @@ CSCFLAGS = -O2
 CSC = csc $(CSCFLAGS)
 
 SOURCES = $(shell find src/ -iname \*.scm -or -iname \*.ss)
-NONEXEC_SOURCES = $(filter-out src/main.scm src/test-runner.scm, $(SOURCES))
+NONEXEC_SOURCES = $(filter-out src/main.scm src/test-runner.scm src/loadme.scm, $(SOURCES))
 TEST_FILES = $(shell find tests/ -iname \*.map)
 
 PRODUCT = lifter
