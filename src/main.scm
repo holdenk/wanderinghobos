@@ -3,4 +3,3 @@
 (declare (uses simulate))
 (define world (parse-input))
 (display world)
-(world-pp world)

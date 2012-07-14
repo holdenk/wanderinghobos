@@ -1,9 +1,5 @@
 (declare (unit simulatetest))
-(declare (uses parse-input))
-(declare (uses simulate))
-(declare (uses heuristic))
-(declare (uses search))
-(declare (uses list-utils))
+(declare (uses parse-input simulate heuristic search))
 (use srfi-1) 
 (use test)
 
