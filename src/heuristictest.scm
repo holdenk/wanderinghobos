@@ -88,4 +88,22 @@
 	    (test 75 (score-world 1 (list ) heuristictestworldNoHugsEscaped))
 	    (test 25 (score-world 1 (list ) heuristictestworldNoHugsNotEscaped))
 	    (test 50 (score-world 1 (list 'abort) heuristictestworldNoHugsNotEscaped))
-)
+
+(define world-test-1
+ (string->world
+  "######
+#. *R#
+#  \\.#
+#\\ * #
+L  .\\#
+######"))
+
+(define world-test-2
+ (string->world
+  "######
+#. * #
+#  \\R#
+#\\ * #
+L  .\\#
+######"))
+
