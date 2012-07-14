@@ -14,7 +14,7 @@
 					  (if (> (length (command-line-arguments)) 0)
 					  (best-move world (+ 100 (* 2 (* wheight wwidth))))
 					  ;;Otherwise run forver
-					  (best-move-random world (+ 500 (* 10 (* wheight wwidth))) +inf.0)
+					  (best-move-random world (+ 250 (* 3 (* wheight wwidth))) +inf.0)
 					  )
 					  2))))
 	(display (output-moves moves)))
