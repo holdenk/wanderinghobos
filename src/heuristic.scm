@@ -6,6 +6,8 @@
 
 (define (heuristic-world initialhugs path world)
   (define MANHATTANDISTCOST 1.1)
+ (if (escaped? world)
+     (- (score-world initialhugs path world))
   ;;Also they give you a lolipop after! OMG Ponies
   (if (eq? 0 (count-hugs world))
       ;;We got all of teh hugs
@@ -19,7 +21,8 @@
        (score-world initialhugs path world)
        )
     )
-)
+  )
+ )
 
 (define (score-world initialhugs path world)
   (let ((hugvalue (if (and (not (null? path)) 

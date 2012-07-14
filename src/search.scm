@@ -12,6 +12,10 @@
   (when (or (not *best-node-so-far*) (< (vector-ref min 0) (vector-ref *best-node-so-far* 0)))
    (set! *best-node-so-far* min))))
 
+(define (update-best! world)
+ (when (or (not *best-node-so-far*) (< (vector-ref world 0) (vector-ref *best-node-so-far* 0)))
+  (set! *best-node-so-far* world)))
+
 (define (best-moves1 evaluator heap)
  (let ((cost&world&moves (pairing-heap-min heap))
        (heap1 (pairing-heap-remove-min heap)))
@@ -21,14 +25,14 @@
           (moves (cons move (vector-ref cost&world&moves 2))))
      (if (and world1 (not (i-am-dead? world1)))
          (if (done? world1 moves)
-             heap
+             (begin (update-best! (vector (evaluator moves world1) world1 moves)) heap)
              (let ((world2 (simulate world1)))
               (pairing-heap-insert (vector (evaluator moves world2) world2 moves) heap)))
          heap)))
    heap1
    moves)))
 
-(define (best-moves evaluator world n)
+(define (best-moves0 evaluator world n)
  (set! *best-node-so-far* #f)
  (let ((heap 
         (let* ((initial-hugs (count-hugs world))
@@ -45,7 +49,10 @@
           (if (= n 0)
               heap
               (loop (- n 1) (best-moves1 evaluator1 heap)))))))
-  (pairing-heap-insert *best-node-so-far* heap)))
+  heap))
+
+(define (best-moves evaluator world n)
+ (pairing-heap-insert *best-node-so-far* (best-moves0 evaluator world n)))
 
 (define (best-move world n) 
  (pairing-heap-min (best-moves heuristic-world world n)))
