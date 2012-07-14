@@ -53,3 +53,6 @@
 	    (test 0 (manhattan-dist-to-hug heuristictestworld4))
 	    (test 1 (manhattan-dist-to-hug heuristictestworld5))
 )
+(test-group "score-world"
+	    (test #t (number? (score-world heuristictestworld1)))
+)

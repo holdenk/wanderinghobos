@@ -10,7 +10,7 @@
   ;;Also they give you a lolipop after! OMG Ponies
  (+ (* HUGCOST (count-hugs world))
      (* MANHATTANDISTCOST (manhattan-dist-to-hug world))
-     (* DEATHCOST (i-am-dead? world))
+;;     (* DEATHCOST (i-am-dead? world))
     )
 )
 
@@ -25,7 +25,7 @@
 		(+ count (vector-count (lambda (i e) (eq? obj e)) v))
 		)
 	       0
-	       world
+	       (world-board world)
 	       )
 )
 
@@ -41,6 +41,7 @@
 					)) 0 hugs)
       )
   )
+
 
 (define (mdist a b)
   (+ (abs (- (car a) (car b)))
