@@ -33,7 +33,7 @@ clean:
 	rm -rf test-results
 
 .PHONY: all clean test package
-#.SILENT:
+.SILENT:
 
 %.o: %.scm
 	$(CSC) -c $<
