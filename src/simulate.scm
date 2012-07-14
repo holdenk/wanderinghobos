@@ -103,7 +103,7 @@
         (board-set! board-out x y 'empty)
         (board-set! board-out (+ x 1) (- y 1) 'rock)
         (list (list (+ x 1) (- y 1))))
-       ((and (closed-lift? board x y) (not (some-board hug? board)))
+       ((and (closed-lift? board x y) (not (some-board (lambda (a) (equal? a 'hug)) board)))
         (board-set! board-out x y 'open-lift)
         '())
        (else
@@ -163,7 +163,7 @@
           ((up) (list (car location) (- (cadr location) 1)))
           ((down) (list (car location) (+ (cadr location) 1)))
           ((wait) location)
-          (else (error "Unsupported move"))))
+          (else (error "Unsupported move" board direction))))
         (l-x (car location)) (l-y (cadr location))
         (d-x (car destination)) (d-y (cadr destination)))
   (define (move-it)
