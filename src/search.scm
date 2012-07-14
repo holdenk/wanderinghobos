@@ -1,7 +1,7 @@
 (declare (unit search))
 (declare (uses simulate pairing-heap))
 (use srfi-1)
-(use list-utils)
+(use list-utils sequences)
 
 (define moves '(left right up down wait abort))
 

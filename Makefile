@@ -29,7 +29,7 @@ test-runner: $(addsuffix .o, $(basename $(NONEXEC_SOURCES))) src/test-runner.o
 	$(CSC) -o $@ $^
 
 clean:
-	rm -f lifter src/*.o icfp-*.tgz
+	rm -f lifter test-runner src/*.o icfp-*.tgz
 	rm -rf test-results
 
 .PHONY: all clean test package
