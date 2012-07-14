@@ -5,7 +5,7 @@
 (use vector-lib)
 
 (define (heuristic-world initialhugs path world)
-  (define MANHATTANDISTCOST 1)
+  (define MANHATTANDISTCOST 1.1)
   ;;Also they give you a lolipop after! OMG Ponies
   (if (eq? 0 (count-hugs world))
       ;;We got all of teh hugs
