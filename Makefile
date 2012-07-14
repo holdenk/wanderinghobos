@@ -12,7 +12,7 @@ STATIC = install PACKAGES-TESTING README Makefile
 
 TEST_CASES = contest1
 
-TEAM_NUM = 96693622 
+TEAM_NUM = 96693622
 
 all: $(PRODUCT) play-map test
 
