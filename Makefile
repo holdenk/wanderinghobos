@@ -1,8 +1,9 @@
 CSCFLAGS = -O2
 CSC = csc $(CSCFLAGS)
 
+IGNORES = src/main.scm src/test-runner.scm src/loadme.scm src/play-map.scm
 SOURCES = $(shell find src/ -iname \*.scm -or -iname \*.ss)
-NONEXEC_SOURCES = $(filter-out src/main.scm src/test-runner.scm src/loadme.scm, $(SOURCES))
+NONEXEC_SOURCES = $(filter-out $(IGNORES), $(SOURCES))
 TEST_FILES = $(shell find tests/ -iname \*.map)
 
 PRODUCT = lifter
@@ -13,9 +14,12 @@ TEST_CASES = contest1
 
 TEAM_NUM = 0
 
-all: $(PRODUCT) test
+all: $(PRODUCT) play-map test
 
 $(PRODUCT): $(addsuffix .o, $(basename $(NONEXEC_SOURCES))) src/main.o
+	$(CSC) -o $@ $^
+
+play-map: $(addsuffix .o, $(basename $(NONEXEC_SOURCES))) src/play-map.o
 	$(CSC) -o $@ $^
 
 package:
@@ -29,7 +33,7 @@ test-runner: $(addsuffix .o, $(basename $(NONEXEC_SOURCES))) src/test-runner.o
 	$(CSC) -o $@ $^
 
 clean:
-	rm -f lifter test-runner src/*.o icfp-*.tgz
+	rm -f lifter test-runner play-map src/*.o icfp-*.tgz
 	rm -rf test-results
 
 .PHONY: all clean test package
