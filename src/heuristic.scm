@@ -35,7 +35,10 @@
        (robot (find-robot world))
        (hugs (find-hugs world))
       )
-    (fold (lambda (hug currentdist) (mdist robot hug)) 0 hugs)
+    (fold (lambda (hug currentdist) (if (eq? currentdist 0)
+					(mdist robot hug)
+					(min currentdist (mdist robot hug))
+					)) 0 hugs)
       )
   )
 
