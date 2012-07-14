@@ -43,6 +43,21 @@
 		 #(wall wall wall wall wall)))
 	     'left))
 )
+(define heuristictestworldNoHugsNotEscaped
+  (dry-world
+   '#(#(wall rock earth rock wall)
+      #(wall empty empty rock wall)
+      #(wall empty robot open-lift wall)
+      #(wall wall wall wall wall)))
+)
+(define heuristictestworldNoHugsEscaped
+  (dry-world
+   '#(#(wall rock earth rock wall)
+      #(wall empty empty rock wall)
+      #(wall empty robot empty wall)
+      #(wall wall wall wall wall)))
+)
+
 
 
 (test-group "find-the-robot"
@@ -70,4 +85,7 @@
 		  (score-world 1 (list 'wait) heuristictestworld1))
 		  )
 	    (test +inf.0 (heuristic-world 1 (list ) heuristictestworldDead))
+	    (test 75 (score-world 1 (list ) heuristictestworldNoHugsEscaped))
+	    (test 25 (score-world 1 (list ) heuristictestworldNoHugsNotEscaped))
+	    (test 50 (score-world 1 (list 'abort) heuristictestworldNoHugsNotEscaped))
 )
