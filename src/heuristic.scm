@@ -12,7 +12,7 @@
        0
        (* MANHATTANDISTCOST (manhattan-dist-to-lift world))
        (score-world initialhugs path world)
-       )      
+       )
       ;;We still have hugs
       (- 
        0
@@ -24,22 +24,27 @@
 
 (define (score-world initialhugs path world)
   (let ((hugvalue (if (and (not (null? path)) 
-			   (eq? abort (car path)))
+			   (eq? 'abort (car path)))
 		      50
 		      (if (escaped? world)
 			  75
 			  25
 			  )
 		      )))
+    (score-world-with-hug-value initialhugs path world hugvalue))
+)
+
+(define (score-world-with-hug-value initialhugs path world hugvalue)
     (-
      (* hugvalue (- initialhugs (count-hugs world)))
      (moves-in-path path)
      (add-death-cost world)
      )
-  )
-)
+    )
+
 (define (moves-in-path path)
-  (length (filter (lambda (x) (not (eq? x 'wait))) path))  
+  (length (filter (lambda (x) (not (or (eq? x 'wait)
+				       (eq? x 'abort)))) path))  
 )
 ;;We don't want to die unless we abort, abortions are FREE
 (define (add-death-cost world)
