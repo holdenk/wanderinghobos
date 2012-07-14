@@ -119,7 +119,7 @@
                     (display "\n" port))
                    (world-board world))
   (format port
-          "Water ~A\nFlooding ~A\nWaterproof ~A\nIteration ~A\nRocks ~A\n"
+          "water ~A, flooding ~A, waterproof ~A, iteration ~A, rocks ~A"
           (world-water world)
           (world-flooding world)
           (world-waterproof world)
