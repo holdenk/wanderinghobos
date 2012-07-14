@@ -34,7 +34,7 @@
 	(board (world-board world))
 	)
     ;;Section 3.1 resource limits
-   (if (>= path-length (* (board-height board) (board-width width)))
+   (if (>= path-length (* (board-height board) (board-width board)))
 	-inf.0
 	(score-world-with-hug-value initialhugs path world hugvalue path-length))
     )

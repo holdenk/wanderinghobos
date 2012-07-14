@@ -31,17 +31,17 @@
 (define (best-moves evaluator world n)
  ;; evaluator :: hugs path world
  (set! *best-node-so-far* #f)
- (let* ((initial-hugs (count-hugs world))
-        (evaluator1 (lambda (path world) (evaluator initial-hugs path world))))
-  (let loop ((n n) (heap (pairing-heap-insert
-                          (vector (evaluator1 '() world) world '())
-                          (pairing-heap-empty (lambda (a b) (< (vector-ref a 0) (vector-ref b 0)))))))
-   (bestest-best! heap)
-   (if (= n 0)
-       heap
-       (loop (- n 1) (best-moves1 evaluator1 heap)))))
- (bestest-best! heap)
- (pairing-heap-insert *best-node-so-far* heap))
+ (let ((heap 
+        (let* ((initial-hugs (count-hugs world))
+               (evaluator1 (lambda (path world) (evaluator initial-hugs path world))))
+         (let loop ((n n) (heap (pairing-heap-insert
+                                 (vector (evaluator1 '() world) world '())
+                                 (pairing-heap-empty (lambda (a b) (< (vector-ref a 0) (vector-ref b 0)))))))
+          (bestest-best! heap)
+          (if (= n 0)
+              heap
+              (loop (- n 1) (best-moves1 evaluator1 heap)))))))
+  (pairing-heap-insert *best-node-so-far* heap)))
 
 (define (best-move world n) 
  (pairing-heap-min (best-moves heuristic-world world n)))
