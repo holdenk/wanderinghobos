@@ -28,4 +28,14 @@
 	    (test (world-board smashed-world) (world-board  (simulate quantum-world))))
 
 (test-group "some-runs"
-	    (test 0 (best-moves heuristic-world (file->world "../tests/contest1.map") 100)))
+	    (test 0 (best-moves heuristic-world (file->world "../tests/contest1.map") 100))
+	    (test 0 (best-moves heuristic-world (file->world "../tests/contest2.map") 100))
+	    (test 0 (best-moves heuristic-world (file->world "../tests/contest3.map") 100))
+	    (test 0 (best-moves heuristic-world (file->world "../tests/contest4.map") 100))
+	    (test 0 (best-moves heuristic-world (file->world "../tests/contest5.map") 100))
+	    (test 0 (best-moves heuristic-world (file->world "../tests/contest6.map") 100))
+	    (test 0 (best-moves heuristic-world (file->world "../tests/contest7.map") 100))
+	    (test 0 (best-moves heuristic-world (file->world "../tests/contest8.map") 100))
+	    (test 0 (best-moves heuristic-world (file->world "../tests/contest9.map") 100))
+	    (test 0 (best-moves heuristic-world (file->world "../tests/contest10.map") 100))
+)
