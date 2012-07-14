@@ -4,6 +4,10 @@
 (declare (uses parse-input))
 (use vector-lib)
 
+(define (fairly-simple-fifty-heuristic-world initialhugs path world)
+  (define MANHATTANDISTCOST 1.1)
+  (simple-minhugvalue-heuristic-world initialhugs path world MANHATTANDISTCOST 50)
+    )
 (define (fairly-simple-heuristic-world initialhugs path world)
   (define MANHATTANDISTCOST 1.1)
   (simple-heuristic-world initialhugs path world MANHATTANDISTCOST)
@@ -31,6 +35,26 @@
      )
  )
 
+(define (simple-minhugvalue-heuristic-world initialhugs path world MANHATTANDISTCOST minhugvalue)
+ (if (escaped? world)
+     (- (score-world initialhugs path world))
+     ;;Also they give you a lolipop after! OMG Ponies
+     (if (eq? 0 (count-hugs world))
+         ;;We got all of teh hugs
+         (- 
+          (* MANHATTANDISTCOST (manhattan-dist-to-lift world))
+          (score-world-with-min-hug-value initialhugs path world minhugvalue)
+          )
+         ;;We still have hugs
+         (- 
+          (* MANHATTANDISTCOST (manhattan-dist-to-hug world))
+          (score-world-with-min-hug-value initialhugs path world minhugvalue)
+          )
+         )
+     )
+ )
+
+
 ;;Hugs remaining and makes sexy
 (define (crazy-heuristic-world initialhugs path world)
   (let ((hugcount (count-hugs world)))
@@ -41,12 +65,12 @@
 	    ;;We got all of teh hugs
 	    (- 
 	     (* MANHATTANDISTCOST (manhattan-dist-to-lift world))
-	     (score-world initialhugs path world)
+	     (score-world-with-min-hug-value initialhugs path world 50)
 	     )
 	    ;;We still have hugs
 	    (- 
 	     (/ hugcount (manhattan-dist-to-hug world))
-	     (score-world initialhugs path world)
+	     (score-world-with-min-hug-value initialhugs path world 50)
 	     )
 	    )
 	)
@@ -57,14 +81,21 @@
 (define heuristic-world fairly-simple-heuristic-world)
 
 (define (score-world initialhugs path world)
-  (let ((hugvalue (if (and (not (null? path)) 
-			   (eq? 'abort (car path)))
-		      50
-		      (if (escaped? world)
-			  75
-			  25
-			  )
-		      ))
+  (score-world-with-min-hug-value initialhugs path world 25)
+)
+
+;;For most cases we want the minhugvalue to be 25, but for our heuristic we might want
+;;to try and use different values (like 50) since we can abort randomly.
+(define (score-world-with-min-hug-value initialhugs path world minhugvalue)
+  (let ((hugvalue (max minhugvalue 
+		       (if (and (not (null? path)) 
+				(eq? 'abort (car path)))
+			   50
+			   (if (escaped? world)
+			       75
+			       minhugvalue
+			       )
+			   )))
 	(path-length (moves-in-path path))
 	(board (world-board world))
 	)
