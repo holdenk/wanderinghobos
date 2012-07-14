@@ -1,7 +1,7 @@
 (declare (unit heuristictest))
-(require-library parse-input)
-(require-library simulate)
-(require-library heuristic)
+(declare (uses parse-input))
+(declare (uses simulate))
+(declare (uses heuristic))
 (use test)
 
 (define (dry-world board) (make-world board +inf.0 +inf.0 +inf.0 0 0 '()))

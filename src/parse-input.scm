@@ -114,6 +114,7 @@
 
 (define-record-printer (world world port)
  (begin
+  (format port "(")
   (vector-for-each (lambda (i l)
                     (vector-for-each (lambda (i l2) (display (symbol-to-char l2) port)) l)
                     (display "\n" port))
@@ -124,5 +125,6 @@
           (world-flooding world)
           (world-waterproof world)
           (world-iteration world)
-          (world-rocks world))))
+          (world-rocks world))
+  (format port ")")))
 

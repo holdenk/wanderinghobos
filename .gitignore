@@ -4,3 +4,5 @@ lifter
 *.result
 src/*.o
 icfp-*.tgz
+test-results
+test-runner
