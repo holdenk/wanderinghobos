@@ -49,4 +49,4 @@ test-results/%.result: tests/%.map $(PRODUCT)
 
 test-results/simulate-tests: $(TEST_FILES) test-runner
 	mkdir -p test-results
-	./test-runner $(basename $(TEST_FILES)) > test-results/simulate-tests
+	./test-runner $(basename $(TEST_FILES)) | tee test-results/simulate-tests
