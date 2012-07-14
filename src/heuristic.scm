@@ -85,8 +85,8 @@
 
 ;;Todo: make sure "wait" and "todo" don't count to moves-in-path  eh
 (define (moves-in-path path)
-  (length (filter (lambda (x) (not (eq? x 'abort))))
-		  path))  
+  (length (filter (lambda (x) (not (eq? x 'abort)))
+		  path))
 )
 ;;We don't want to die unless we abort, abortions are FREE
 (define (add-death-cost world)
