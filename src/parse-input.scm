@@ -26,7 +26,7 @@
 	    ((eq? sy 'up) #\U )
 	    ((eq? sy 'wait) #\W)
 	    ((eq? sy 'abort) #\A)))
-  (list->string (map sym-to-char list)))
+  (list->string (map sym-to-char (reverse list))))
 
 
 
