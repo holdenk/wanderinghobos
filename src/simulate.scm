@@ -263,3 +263,13 @@
  (and (equal? (i-am-dead? (simulate (move-robot faq-2 'left))) #f)
     (equal? (i-am-dead? (simulate (move-robot faq-2-1 'left))) #t)
     (equal? (i-am-dead? (simulate (move-robot faq-2-1 'right))) #f)))
+
+(define (count-lifts world) 
+ (+ (count-obj 'closed-lift world) (count-obj 'open-lift world)))
+
+(define (escaped? world) (= (count-lifts world) 0))
+
+(define (done? world path)
+ (if (and (eq? 'abort (car path)) (escaped? world))
+     #t
+     #f))
