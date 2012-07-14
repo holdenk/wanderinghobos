@@ -107,4 +107,8 @@
     )
 )
 
-(define (string->world string) (call-with-input-string string parse-input))
+(define (string->world string)
+	(call-with-input-string string parse-input))
+(define (file->world file-name)
+	(call-with-input-file file-name parse-input))
+
