@@ -35,15 +35,16 @@
  		((world (file->world x))
 		 (board (world-board world))
 		 (the-world (best-move-random-with-no-repeats (file->world x) (+ 100 (* 3 (board-height board) (board-width board))) 3)))
-;;		(display (output-moves (vector-ref the-world 2)))
+		(display (output-moves (vector-ref the-world 2)))
 ;;		(display (vector-ref the-world 1))
  	      (score-world (count-hugs (file->world x)) (vector-ref the-world 2)  (vector-ref the-world 1))))
 
-;;(test-group "flood4" 
-;;	    (test 1 (output-moves (vector-ref (best-move (file->world "tests/flood4.map") 1000) 2))))
+(test-group "flood4" 
+	    (test 1 (file->world "tests/contest1.map")))
 
 ;;(test-group "con1" 
 ;;	    (test 1 (output-moves (vector-ref (best-move (file->world "tests/contest1.map") 1000) 2))))
+
 
 (test-group "some-runs" 
 	    (test 212 (foo "tests/contest1.map"))
