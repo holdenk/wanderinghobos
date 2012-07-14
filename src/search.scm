@@ -1,11 +1,49 @@
 (declare (unit search))
 (declare (uses simulate pairing-heap))
 (use srfi-1)
-(use list-utils sequences)
+(use list-utils sequences random-bsd)
 
-(define moves '(left right up down wait abort))
+;; Use signal handler, process until interrupt
+;; Don't go somewhere twice
+
+(define (remq x y)
+    (cond ((null? y) y)
+	  ((eq? x (car y)) (remq x (cdr y)))
+	  (else (cons (car y) (remq x (cdr y))))))
+
+(define (remq! x y)
+    (cond ((null? y) y)
+	  ((eq? x (car y)) (remq! x (cdr y)))
+	  (else (let loop ((prev y))
+		     (cond ((null? (cdr prev))
+			    y)
+			   ((eq? (cadr prev) x)
+			    (set-cdr! prev (cddr prev))
+			    (loop prev))
+			   (else (loop (cdr prev))))))))
+
+(define (map-n f n)
+ (let loop ((i 0) (c '()))
+  (if (< i n) (loop (+ i 1) (cons (f i) c)) (reverse c))))
+
+(define (n-random-elements-without-replacement n x)
+ (when (< (length x) n) (panic "Not enough elements"))
+ (let loop ((x (map list x)) (l (length x)) (n n) (c '()))
+  (if (zero? n)
+      c
+      (let ((e (list-ref x (random-integer l))))
+       (loop (remq! e x) (- l 1) (- n 1) (cons (first e) c))))))
+
+(define (random-integer n) (inexact->exact (floor (* (random-real) n))))
+
+(define (deal x) (n-random-elements-without-replacement (length x) x))
+
+(define moves-directions '(left right up down))
+(define moves-other '(abort wait))
+(define moves (append moves-directions moves-other))
 
 (define *best-node-so-far* #f)
+(define *best-node* #f)
 
 (define (bestest-best! heap)
  (let ((min (pairing-heap-min heap)))
@@ -16,7 +54,7 @@
  (when (or (not *best-node-so-far*) (< (vector-ref world 0) (vector-ref *best-node-so-far* 0)))
   (set! *best-node-so-far* world)))
 
-(define (best-moves1 evaluator heap)
+(define (best-moves1 evaluator heap random?)
  (let ((cost&world&moves (pairing-heap-min heap))
        (heap1 (pairing-heap-remove-min heap)))
   (foldl
@@ -30,9 +68,11 @@
               (pairing-heap-insert (vector (evaluator moves world2) world2 moves) heap)))
          heap)))
    heap1
-   moves)))
+   (if random?
+       (append (deal moves-directions) moves-other)
+       moves))))
 
-(define (best-moves0 evaluator world n)
+(define (best-moves0 evaluator world n random?)
  (set! *best-node-so-far* #f)
  (let ((heap 
         (let* ((initial-hugs (count-hugs world))
@@ -48,14 +88,25 @@
           (bestest-best! heap)
           (if (= n 0)
               heap
-              (loop (- n 1) (best-moves1 evaluator1 heap)))))))
+              (loop (- n 1) (best-moves1 evaluator1 heap random?)))))))
   heap))
 
-(define (best-moves evaluator world n)
- (pairing-heap-insert *best-node-so-far* (best-moves0 evaluator world n)))
+(define (best-moves evaluator world n random?)
+ (let ((heap (best-moves0 evaluator world n random?)))
+  (if *best-node-so-far*
+      (pairing-heap-insert *best-node-so-far* heap)
+      heap)))
 
 (define (best-move world n) 
- (pairing-heap-min (best-moves heuristic-world world n)))
+ (pairing-heap-min (best-moves heuristic-world world n #f)))
+
+(define (best-move-random world n restarts) 
+ (map-n (lambda _ 
+         (let ((r (pairing-heap-min (best-moves heuristic-world world n #t))))
+          (if (or (not *best-node*) (< (vector-ref r 0) (vector-ref *best-node* 0)))
+              (set! *best-node* r)
+              #f)))
+  restarts))
 
 (define (pairing-heap->list heap)
  (let loop ((heap heap) (r '()))
@@ -75,13 +126,14 @@
    (lambda (a) 
     (format #t "Node ~a ~a~%" (vector-ref a 0) (vector-ref a 2))
     (world-pp (vector-ref a 1)))
-  (pairing-heap->list (best-moves (lambda _ (display _)(newline) (apply heuristic-world _)) w1 10))))
+  (pairing-heap->list (best-moves (lambda _ (display _)(newline) (apply heuristic-world _)) w1 10 #f))))
 
 (define (test1)
  (best-moves (lambda _ (display (cons (apply heuristic-world _) _))(newline)
                 (apply heuristic-world _))
              (file->world "../tests/contest1.map")
-             10))
+             10
+             #f))
 
 (define (test2) (best-move (file->world "../tests/contest1.map") 30))
 (define (test3) (best-move (file->world "../tests/contest2.map") 30))
