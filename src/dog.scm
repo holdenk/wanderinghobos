@@ -91,9 +91,6 @@
             (make-path (edge-weight e) (list e))
             (make-path +inf.0 '())))))))
 
-;; (let ((board1 (map-indexed-matrix list board)))
-;;   )
-
 (define (passable? board x y) (member (board-ref board x y) '(empty earth hug closed-lift open-lift)))
 
 (define (board2shit board)

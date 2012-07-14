@@ -113,7 +113,7 @@ L  .\\#
 		  (score-world 1 (list 'up) heuristictestworld1))
 		  )
 	    (test 0 (- (score-world 1 (list ) heuristictestworld1)
-		  (score-world 1 (list 'wait) heuristictestworld1))
+		  (score-world 1 (list 'left) heuristictestworld1))
 		  )
 	    (test +inf.0 (heuristic-world 1 (list ) heuristictestworldDead))
 	    (test 75 (score-world 1 (list ) heuristictestworldNoHugsEscaped))
