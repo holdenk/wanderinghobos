@@ -30,6 +30,12 @@
  		((the-world (best-move (file->world x) 1000))) 
  	      (score-world (count-hugs (file->world x)) (vector-ref the-world 2)  (vector-ref the-world 1))))
 
+;;(test-group "flood4" 
+;;	    (test 1 (output-moves (vector-ref (best-move (file->world "tests/flood4.map") 1000) 2))))
+
+;;(test-group "con1" 
+;;	    (test 1 (output-moves (vector-ref (best-move (file->world "tests/contest1.map") 1000) 2))))
+
 (test-group "some-runs" 
 	    (test 212 (foo "tests/contest1.map"))
 	    (test 281 (foo "tests/contest2.map"))
@@ -40,4 +46,9 @@
 	    (test 869 (foo "tests/contest7.map"))
 	    (test 1973 (foo "tests/contest8.map"))
 	    (test 3093 (foo "tests/contest9.map"))
-	    (test 3643 (foo "tests/contest10.map")))
+	    (test 3643 (foo "tests/contest10.map"))
+	    (test 943  (foo "tests/flood1.map"))
+	    (test 281  (foo "tests/flood2.map"))
+	    (test 1301  (foo "tests/flood3.map"))
+	    (test 1591  (foo "tests/flood4.map"))
+	    (test 575  (foo "tests/flood5.map")))
