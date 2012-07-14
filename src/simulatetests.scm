@@ -25,9 +25,14 @@
 	    (test (world-board smashed-world) (world-board  (simulate quantum-world))))
 
 
-(test-group "some-runs"
+
+ (define (foo x) (let 
+ 		((the-world (best-move (file->world x) 100))) 
+ 	      (score-world (count-hugs (vector-ref the-world 1)) (vector-ref the-world 2)  (vector-ref the-world 1))))
+
+(test-group "some-runs" 
 	    (test 212 (output-moves (reverse (vector-ref (best-move (file->world "tests/contest1.map") 100) 2))))
-	    (test 281 (vector-ref (best-move (file->world "tests/contest2.map") 100) 0))
+	    (test 281 (foo "tests/contest2.map"))
 	    (test 275 (vector-ref (best-move (file->world "tests/contest3.map") 100) 0))
 	    (test 575 (vector-ref (best-move (file->world "tests/contest4.map") 100) 0))
 	    (test 1303 (vector-ref (best-move (file->world "tests/contest5.map") 100)0))
