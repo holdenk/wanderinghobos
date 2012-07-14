@@ -133,7 +133,9 @@
  (let ((new-board (simulate-board (world-board world))))
   (make-world (car new-board)
               (+ (world-water world)
-                 (+ (if (= (modulo (world-iteration world) (world-flooding world)) 0)
+                 (+ (if (and ;; Fuck, Chicken isn't IEEE 754 complaint
+                         (not (zero? (world-flooding world)))
+                         (= (modulo (world-iteration world) (world-flooding world)) 0))
                         1
                         0)))
               (world-flooding world)
@@ -163,7 +165,7 @@
           ((up) (list (car location) (- (cadr location) 1)))
           ((down) (list (car location) (+ (cadr location) 1)))
           ((wait) location)
-          (else (error "Unsupported move"))))
+          (else (error "Unsupported move" board direction))))
         (l-x (car location)) (l-y (cadr location))
         (d-x (car destination)) (d-y (cadr destination)))
   (define (move-it)
