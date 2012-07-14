@@ -14,7 +14,7 @@ TEST_CASES = contest1
 
 TEAM_NUM = 0
 
-all: $(PRODUCT) test
+all: $(PRODUCT) play-map test
 
 $(PRODUCT): $(addsuffix .o, $(basename $(NONEXEC_SOURCES))) src/main.o
 	$(CSC) -o $@ $^
@@ -33,7 +33,7 @@ test-runner: $(addsuffix .o, $(basename $(NONEXEC_SOURCES))) src/test-runner.o
 	$(CSC) -o $@ $^
 
 clean:
-	rm -f lifter test-runner src/*.o icfp-*.tgz
+	rm -f lifter test-runner play-map src/*.o icfp-*.tgz
 	rm -rf test-results
 
 .PHONY: all clean test package
