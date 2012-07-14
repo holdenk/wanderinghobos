@@ -21,7 +21,10 @@
 	(foldl (lambda (s m)
 					 ;;ouput the list of murh costs
 					 (map (lambda (possible-move)
-									(let ((newworld (simulate (move-robot s m))))
+									(let* ((post-move (move-robot s possible-move))
+												 (newworld (if (eq? #f post-move)
+																			 #f
+																			 (simulate (move-robot s possible-move)))))
 										(display possible-move) 
 										(display ":")
 										;;Hack doesn't look @ path so far right now but whatever
