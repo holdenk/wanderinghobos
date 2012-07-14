@@ -35,7 +35,6 @@
      (moves-in-path path)
      (add-death-cost world)
      )
-     )
   )
 )
 (define (moves-in-path path)
