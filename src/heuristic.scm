@@ -78,6 +78,7 @@
 )
 
 ;;Currently we use fairly simple
+;;(define heuristic-world fairly-simple-heuristic-world)
 (define heuristic-world fairly-simple-heuristic-world)
 
 (define (score-world initialhugs path world)
