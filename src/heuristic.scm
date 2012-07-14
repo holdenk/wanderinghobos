@@ -23,7 +23,8 @@
 )
 
 (define (score-world initialhugs path world)
-  (let ((hugvalue (if (eq? abort (car path))
+  (let ((hugvalue (if (and (not (null? path)) 
+			   (eq? abort (car path)))
 		      50
 		      (if (escaped? world)
 			  75
