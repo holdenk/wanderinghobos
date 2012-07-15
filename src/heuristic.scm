@@ -20,7 +20,7 @@
 (define (simple-hobofloydwarshall-world score initialhugs path world DISTCOST fn doreachabletest)
 (define cost
  (if (escaped? world)
-     (- (score-world initialhugs path world))
+     (- score)
      ;;Also they give you a lolipop after! OMG Ponies
      (begin
        (if (or
@@ -57,7 +57,7 @@ cost
     )
 (define (fairly-simple-heuristic-world score initialhugs path world)
   (define MANHATTANDISTCOST 1.1)
-  (simple-heuristic-world initialhugs score path world MANHATTANDISTCOST)
+  (simple-heuristic-world score initialhugs path world MANHATTANDISTCOST)
     )
 (define (very-simple-heuristic-world score initialhugs path world)
   (define MANHATTANDISTCOST 1)
@@ -65,7 +65,7 @@ cost
     )
 (define (simple-heuristic-world score initialhugs path world MANHATTANDISTCOST)
  (if (escaped? world)
-     (- (score-world initialhugs path world))
+     (- score)
      ;;Also they give you a lolipop after! OMG Ponies
      (if (eq? 0 (count-hugs world))
          ;;We got all of teh hugs
@@ -84,7 +84,7 @@ cost
 
 (define (simple-minhugvalue-heuristic-world score initialhugs path world MANHATTANDISTCOST minhugvalue)
  (if (escaped? world)
-     (- (score-world initialhugs path world))
+     (- score)
      ;;Also they give you a lolipop after! OMG Ponies
      (if (eq? 0 (count-hugs world))
          ;;We got all of teh hugs
