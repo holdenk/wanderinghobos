@@ -1,7 +1,7 @@
 (declare (unit simulate))
 
 (declare (uses parse-input))
-(use test srfi-1 posix vector-lib)
+(use test srfi-1 posix vector-lib list-utils)
 
 (define (for-each-n f n)
  (let loop ((i 0)) (when (< i n) (f i) (loop (+ i 1)))))
@@ -286,37 +286,37 @@
 				(list board location #f))
 			 ((equal? direction 'shave)
 				(list (let* ((board-out (copy-board board))
-										 (x (car location))
-										 (y (cadr location))
-										 (neighbours (list (cons x (- y 1))
-																			 (cons (+ x 1) y)
-																			 (cons (+ x 1) (- y 1))
-																			 (cons (- x 1) (- y 1))
-																			 (cons (- x 1) y)
-																			 (cons (- x 1) (+ y 1))
-																			 (cons x (+ y 1))
-																			 (cons (+ x 1) (+ y 1)))))
-								(foldl (lambda (cur-board point)
-												 (if (beard? board (car point) (cdr point))
-														 (board-set! cur-board
-																				 (car point)
-																				 (cdr point)
-																				 'empty)
-														 cur-board))
-											 board-out
-											 neighbours))
-							location
-							#f))
+					     (x (car location))
+					     (y (cadr location))
+					     (neighbours (list (cons x (- y 1))
+							       (cons (+ x 1) y)
+							       (cons (+ x 1) (- y 1))
+							       (cons (- x 1) (- y 1))
+							       (cons (- x 1) y)
+							       (cons (- x 1) (+ y 1))
+							       (cons x (+ y 1))
+							       (cons (+ x 1) (+ y 1)))))
+					(foldl (lambda (cur-board point)
+						 (if (beard? board (car point) (cdr point))
+						     (board-set! cur-board
+								 (car point)
+								 (cdr point)
+								 'empty)
+						     cur-board))
+					       board-out
+					       neighbours))
+				      location
+				      #f))
 			 (else
-				(let* ((destination
-								(case direction
-									((left) (list (- (car location) 1) (cadr location)))
-									((right) (list (+ (car location) 1) (cadr location)))
-									((up) (list (car location) (- (cadr location) 1)))
-									((down) (list (car location) (+ (cadr location) 1)))
-									(else (error "Unsupported move" board direction))))
-							 (l-x (car location)) (l-y (cadr location))
-							 (d-x (car destination)) (d-y (cadr destination))
+			  (let* ((destination
+				  (case direction
+				    ((left) (list (- (car location) 1) (cadr location)))
+				    ((right) (list (+ (car location) 1) (cadr location)))
+				    ((up) (list (car location) (- (cadr location) 1)))
+				    ((down) (list (car location) (+ (cadr location) 1)))
+				    (else (error "Unsupported move" board direction))))
+				 (l-x (car location)) (l-y (cadr location))
+				 (d-x (car destination)) (d-y (cadr destination))
 							 (dxy (board-ref board d-x d-y)))
 					(define (move-it)
 						(board-set! (board-set! (copy-board board) d-x d-y 'robot) l-x l-y 'empty))
