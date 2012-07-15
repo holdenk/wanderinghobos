@@ -175,7 +175,9 @@
               (world-robot-location world)
               (world-hugs world)
               (count-obj-board 'hug (car new-board))
-              (world-lift-location world))))
+              (world-lift-location world)
+	      #f
+	      )))
 
 (define (i-am-dead? world)
  (let ((robot (find-robot world)))
@@ -211,7 +213,7 @@
 
 (define (move-robot-board board location direction)
  (if (member direction '(abort wait))
-     (list board location)
+     (list board location #f)
      (let* ((destination
              (case direction
               ((left) (list (- (car location) 1) (cadr location)))
@@ -225,7 +227,7 @@
       (define (move-it)
        (board-set! (board-set! (copy-board board) d-x d-y 'robot) l-x l-y 'empty))
       (cond ((and dxy (member dxy '(hug empty open-lift earth)))
-             (list (move-it) (list d-x d-y)))
+             (list (move-it) (list d-x d-y) #f))
             ((equal? dxy 'trampoline-in)
              (let ((f (find-anus-for-mouth board (vector-ref dxy 1))))
               (list
@@ -238,17 +240,23 @@
                         l-x l-y 'empty)
                        (car f) (cadr f) 'robot)
                       (find-mouths-for-anus board (vector-ref dxy 2)))
-               (list d-x d-y))))
+               (list d-x d-y)
+	       #f
+	       )))
             ((and (= d-x (+ l-x 1))
                 (= d-x d-y)
                 (equal? 'rock dxy)
                 (empty? board (+ l-x 2) l-y))
-             (list (board-set! (move-it) (+ l-x 2) l-y 'rock) (list d-x d-y)))
+             (list (board-set! (move-it) (+ l-x 2) l-y 'rock) (list d-x d-y)
+		   #t
+		   ))
             ((and (= d-x (- l-x 1))
                 (= d-x d-y)
                 (equal? 'rock dxy)
                 (empty? board (- l-x 2) l-y))
-             (list (board-set! (move-it) (- l-x 2) l-y 'rock) (list d-x d-y)))
+             (list (board-set! (move-it) (- l-x 2) l-y 'rock) (list d-x d-y)
+		   #t
+		   ))
             (else #f)))))
 
 (define (find-robot-board board)
@@ -301,7 +309,10 @@
                    (let ((l (world-lift-location world)))
                     (if (and l (member (board-ref-unchecked board (car l) (cadr l)) '(open-lift closed-lift)))
                         l
-                        #f))))
+                        #f))
+		   (caddr board&location)
+		   ;;#f
+		   ))
       #f)))
 
 ;; #*. #
@@ -313,7 +324,9 @@
              (find-robot-board board)
              (find-hugs-board board)
              (count-obj-board 'hug board)
-             (find-lift-board board)))
+             (find-lift-board board)
+	     #f
+	     ))
 
 (define faq-2
  (dry-world

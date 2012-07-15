@@ -141,7 +141,7 @@
           (list %define getter (list %getter-with-setter getter setter))))
       fields))))
 
-(define-gs-record world board water flooding waterproof underwater iteration rocks robot-location hugs hug-count lift-location)
+(define-gs-record world board water flooding waterproof underwater iteration rocks robot-location hugs hug-count lift-location movedrock)
 
 (define (world-trampoline-connections world)
  (let ((r '()))
@@ -305,7 +305,8 @@
                (find-robot-board board)
                (find-hugs-board board)
                (count-obj-board 'hug board)
-               (find-lift-board board)))))
+               (find-lift-board board)
+	       #f))))
 
 (define (string->world string)
         (call-with-input-string string parse-input))
