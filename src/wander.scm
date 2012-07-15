@@ -1,41 +1,42 @@
+;; -*- indent-tabs-mode: nil -*- ;;
 (declare (unit wander))
 (declare (uses simulate parse-input dog))
 
 (use list-utils)
 
 (define (world-width world)
-	(board-width (world-board world)))
+  (board-width (world-board world)))
 (define (world-height world)
-	(board-height (world-board world)))
+  (board-height (world-board world)))
 
 (define (wander-compute-fw world)
-	(let* ((board (world-board world))
-				 (fw-data (hobofloydwarshall board)))
-		(cons fw-data board)))
+  (let* ((board (world-board world))
+         (fw-data (hobofloydwarshall board)))
+    (cons fw-data board)))
 
 (define (wander-fw-distance fw-data a b)
-	(path-cost (car a) (cadr a)
-						 (car b) (cadr b)
-						 (car fw-data)
-						 (cdr fw-data)))
+  (path-cost (car a) (cadr a)
+             (car b) (cadr b)
+             (car fw-data)
+             (cdr fw-data)))
 
 ;; Finds the closest point to the target in the provided list of points, and
 ;; places it at the head of the list (the rest may be re-ordered).
 (define (point-closest-to-in points target fw-data)
-	(foldl (lambda (cur-m next)
-					 (if (< (wander-fw-distance fw-data next target)
-									(wander-fw-distance fw-data (car cur-m) target))
-							 (cons next cur-m)
-							 (cons (car cur-m) (cons next (cdr cur-m)))))
-				 (cons (car points) '())
-				 (cdr points)))
+  (foldl (lambda (cur-m next)
+           (if (< (wander-fw-distance fw-data next target)
+                  (wander-fw-distance fw-data (car cur-m) target))
+               (cons next cur-m)
+               (cons (car cur-m) (cons next (cdr cur-m)))))
+         (cons (car points) '())
+         (cdr points)))
 
 
 (define (wander-hugs world)
-	(let* ((fw-data (wander-compute-fw world))
-				 (hugs-locs (find-hugs world))
-				 (robot-loc (find-robot world))
-				 (lift-loc (find-lift world)))
+  (let* ((fw-data (wander-compute-fw world))
+         (hugs-locs (find-hugs world))
+         (robot-loc (find-robot world))
+         (lift-loc (find-lift world)))
     '()))
 
 
