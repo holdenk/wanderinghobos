@@ -16,7 +16,7 @@
      ;;Also they give you a lolipop after! OMG Ponies
      (begin
        (if (or
-	    (world-movedrock world);;Add something to see if the robot moved a rock here
+	    (world-fuckedrocks world);;Add something to see if the robot moved a rock here
 	    (not (null? (world-rocks world)))
 	    (not flw))
 	   (set! flw (hobofloydwarshall (world-board world)))
