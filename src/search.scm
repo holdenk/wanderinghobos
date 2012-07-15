@@ -259,6 +259,17 @@
 (define (test2) (best-move (file->world "../tests/contest1.map") 30))
 (define (test3) (best-move (file->world "../tests/contest2.map") 30))
 
+
+;; (best-move-with-no-repeats (file->world "../tests/contest1.map") 30)
+(define (exhaustive-search world)
+  (define (e-search world moves1 score max_length initial_hugs)
+    (cond 
+     ((eq? max_length 0) (list moves1 (score-world initial_hugs moves1 world)))
+     (else (map (lambda (d) (move-robot world d)) moves)))
+    ;((map (lambda (dir) (move-robot world dir )) moves ))
+  (let ((max_path_length (* (board-height (world-board world)) (board-width (world-board world)))))
+ ;   max_path_length))
+    (e-search world '() 0 max_path_length (count-hugs world)))))
 (define (maximump p l)
  (define (m p l x)
   (if (null? l) x
