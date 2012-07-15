@@ -48,14 +48,14 @@
 (define (bestest-best! heap)
  (unless (pairing-heap-empty? heap)
   (let ((min (pairing-heap-min heap)))
-   (when (or (not *best-node-so-far*) (< (vector-ref min 0) (vector-ref *best-node-so-far* 0)))
+   (when (or (not *best-node-so-far*) (> (vector-ref min 3) (vector-ref *best-node-so-far* 3)))
     (set! *best-node-so-far* min)))))
 
-(define (update-best! world)
- (when (or (not *best-node-so-far*) (< (vector-ref world 0) (vector-ref *best-node-so-far* 0)))
-  (set! *best-node-so-far* world)))
+(define (update-best! tehnode)
+ (when (or (not *best-node-so-far*) (< (vector-ref tehnode 0) (vector-ref *best-node-so-far* 0)))
+  (set! *best-node-so-far* tehnode)))
 
-(define (best-moves1 evaluator heap random? already-seen)
+(define (best-moves1 evaluator fuckingscoreit heap random? already-seen)
  (if (pairing-heap-empty? heap)
      heap
      (let ((cost&world&moves (pairing-heap-min heap))
@@ -66,19 +66,20 @@
               (moves (cons move (vector-ref cost&world&moves 2))))
          (if world1
              (let* ((world2 (simulate world1))
-                    (e (evaluator moves world2))
+		    (score (fuckingscoreit moves world2))
+                    (e (evaluator score moves world2))
                     (robot (find-robot world2))
                     (previous (if already-seen
                                   (board-ref already-seen (car robot) (cadr robot))
                                   +inf.0)))
               (cond ((i-am-dead? world2) heap)
                     ((done? world2 moves)
-                     (update-best! (vector (evaluator moves world2) world2 moves))
+                     (update-best! (vector (evaluator score moves world2) world2 moves score))
                      heap)
                     ((< previous e) heap)
                     (else
                      (when already-seen (board-set! already-seen (car robot) (cadr robot) e))
-                     (pairing-heap-insert (vector e world2 moves) heap))))
+                     (pairing-heap-insert (vector e world2 moves score) heap))))
              heap)))
        heap1
        (if random?
@@ -89,9 +90,11 @@
  (set! *best-node-so-far* #f)
  (let ((heap 
         (let* ((initial-hugs (count-hugs world))
-               (evaluator1 (lambda (path world) (evaluator initial-hugs path world))))
+               (evaluator1 (lambda (score path world) (evaluator score initial-hugs path world))) 
+	       (fuckingscoreit (lambda (path world) (score-world initial-hugs path world)))
+	       )
          (let loop ((n n) (heap (pairing-heap-insert
-                                 (vector (evaluator1 '() world) world '())
+                                 (vector (evaluator1 0 '() world) world '() 0)
                                  (pairing-heap-empty
                                   (lambda (a b)
                                    (cond
@@ -101,7 +104,7 @@
           (bestest-best! heap)
           (if (= n 0)
               heap
-              (loop (- n 1) (best-moves1 evaluator1 heap random? already-seen)))))))
+              (loop (- n 1) (best-moves1 evaluator1 fuckingscoreit heap random? already-seen)))))))
   heap))
 
 (define (best-moves evaluator world n random? already-seen)
