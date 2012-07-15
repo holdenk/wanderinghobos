@@ -23,8 +23,13 @@
 
 (define (map-matrix f m) (map-vector (lambda (v) (map-vector f v)) m))
 
+(define (for-each-matrix f m) (for-each-vector (lambda (v) (for-each-vector f v)) m))
+
 (define (map-indexed-matrix f m)
  (map-indexed-vector (lambda (r i) (map-indexed-vector (lambda (c j) (f c j i)) r)) m))
+
+(define (for-each-indexed-vector f v)
+ (for-each-n (lambda (i) (f (vector-ref v i) i)) (vector-length v)))
 
 (define (map-indexed-vector f v)
  ;; needs work: Won't work correctly when F is nondeterministic.
@@ -37,13 +42,19 @@
    (vector-length v))
   u))
 
+(define (for-each-indexed-matrix f m)
+ (for-each-indexed-vector
+  (lambda (r i) (for-each-indexed-vector (lambda (c j) (f c i j)) r))
+  m))
+
 (define (reverse-vector v) (list->vector (reverse (vector->list v))))
 
 (define (for-each-board-index f board)
- (for-each-n (lambda (y)
-              (for-each-n (lambda (x) (f x y))
-               (board-width board)))
-  (board-height board)))
+ (let ((width (board-width board)))
+  (for-each-n (lambda (y)
+               (for-each-n (lambda (x) (f x y))
+                width))
+   (board-height board))))
 (define (board-height board) (vector-length board))
 (define (board-width board) (vector-length (vector-ref board 0)))
 (define (board-length board) (* (board-height board) (board-width board)))
@@ -52,6 +63,9 @@
  (if (or (< y 0) (< x 0) (>= y (board-height board)) (>= x (board-width board)))
      #f
      (vector-ref (vector-ref board y) x)))
+
+(define (board-ref-unchecked board x y)
+ (vector-ref (vector-ref board y) x))
 
 (define (board-set! board x y contents)
  (vector-set! (vector-ref board y) x contents)
@@ -73,6 +87,8 @@
 (define (wall? board x y) (equal? (board-ref board x y) 'wall))
 (define (hug? board x y) (equal? (board-ref board x y) 'hug))
 (define (lift? board x y) (or (open-lift? board x y) (closed-lift? board x y)))
+(define (trampoline-in? board x y) (is-trampoline-in? (board-ref board x y)))
+(define (trampoline-out? board x y) (is-trampoline-out? (board-ref board x y)))
 
 (define (not-exists? board x y) (not (board-ref board x y)))
 (define (exists? board x y) (board-ref board x y))
@@ -87,45 +103,53 @@
 
 (define (copy-board board) (map-matrix identity board))
 
-(define (execute-square board x y board-out)
- (cond ((and (rock? board x y) (empty? board x (- y 1)))
-        (board-set! board-out x y 'empty)
-        (board-set! board-out x (- y 1) 'rock)
-        (list (list x (- y 1))))
-       ((and (rock? board x y) (rock? board x (- y 1))
-           (empty? board (+ x 1) y) (empty? board (+ x 1) (- y 1)))
-        (board-set! board-out x y 'empty)
-        (board-set! board-out (+ x 1) (- y 1) 'rock)
-        (list (list (+ x 1) (- y 1))))
-       ((and (rock? board x y)
-           (rock? board x (- y 1))
-           (or (and (exists? board (+ x 1) y) (not (empty? board (+ x 1) y)))
-              (and (exists? board (+ x 1) (- y 1)) (not (empty? board (+ x 1) (- y 1)))))
-           (empty? board (- x 1) y)
-           (empty? board (- x 1) (- y 1)))
-        (board-set! board-out x y 'empty)
-        (board-set! board-out (- x 1) (- y 1) 'rock)
-        (list (list (- x 1) (- y 1))))
-       ((and (rock? board x y) (hug? board x (- y 1))
-           (empty? board (+ x 1) y) (empty? board (+ x 1) (- y 1)))
-        (board-set! board-out x y 'empty)
-        (board-set! board-out (+ x 1) (- y 1) 'rock)
-        (list (list (+ x 1) (- y 1))))
-       ((and (closed-lift? board x y) (not (some-board (lambda (a) (equal? a 'hug)) board)))
-        (board-set! board-out x y 'open-lift)
-        '())
-       (else
-        (board-set! board-out x y (board-ref board x y))
-        '())))
+(define (execute-square board x y board-out nr-hugs)
+ (let ((xy (board-ref-unchecked board x y)))
+  (cond ((equal? 'rock xy)
+         '()
+         (let ((xy-1 (board-ref board x (- y 1)))
+               (x+1y (board-ref board (+ x 1) y))
+               (x+1y-1 (board-ref board (+ x 1) (- y 1)))
+               (x-1y-1 (board-ref board (- x 1) (- y 1)))
+               (x-1y (board-ref board (- x 1) y)))
+          (cond 
+           ((and (equal? 'rock xy) (equal? 'empty xy-1))
+            (board-set! board-out x y 'empty)
+            (board-set! board-out x (- y 1) 'rock)
+            (list (list x (- y 1))))
+           ((and (equal? xy 'rock) (equal? xy-1 'rock)
+               (equal? x+1y 'empty) (equal? x+1y-1 'empty))
+            (board-set! board-out x y 'empty)
+            (board-set! board-out (+ x 1) (- y 1) 'rock)
+            (list (list (+ x 1) (- y 1))))
+           ((and (equal? xy 'rock)
+               (equal? xy-1 'rock)
+               (or (and x+1y (not (equal? 'empty x+1y)))
+                  (and x+1y-1 (not (equal? 'empty x+1y-1))))
+               (equal? x-1y 'empty)
+               (equal? x-1y-1 'empty))
+            (board-set! board-out x y 'empty)
+            (board-set! board-out (- x 1) (- y 1) 'rock)
+            (list (list (- x 1) (- y 1))))
+           ((and (equal? xy 'rock) (equal? xy-1 'hug)
+               (equal? x+1y 'empty) (equal? x+1y-1 'empty))
+            (board-set! board-out x y 'empty)
+            (board-set! board-out (+ x 1) (- y 1) 'rock)
+            (list (list (+ x 1) (- y 1))))
+           (else (board-set! board-out x y xy) '()))))
+        ((and (equal? xy 'closed-lift) (= nr-hugs 0))
+         (board-set! board-out x y 'open-lift)
+         '())
+        (else (board-set! board-out x y xy) '()))))
 
-(define (simulate-board board)
+(define (simulate-board board nr-hugs)
  ;; Simulate runs in top-down rather than bottom-up order!
  (let ((board (reverse-vector board)))
   (let ((new-board (map-matrix (const 'empty) board))
         (falling-rocks '()))
    (for-each-board-index 
     (lambda (x y) (set! falling-rocks 
-                   (append (execute-square board x y new-board)
+                   (append (execute-square board x y new-board nr-hugs)
                            falling-rocks)))
     board)
    (list (reverse-vector new-board)
@@ -138,7 +162,7 @@
        (world-water world))))
 
 (define (simulate world)
- (let ((new-board (simulate-board (world-board world))))
+ (let ((new-board (simulate-board (world-board world) (world-hug-count world))))
   (make-world (car new-board)
               (+ (world-water world)
                  (+ (if (and ;; Fuck, Chicken isn't IEEE 754 complaint
@@ -155,48 +179,92 @@
               (map (lambda (position)
                     (list (car position) 
                           (- (board-height (car new-board)) (cadr position) 1)))
-                   (cadr new-board)))))
+                   (cadr new-board))
+              (world-robot-location world)
+              (world-hugs world)
+              (count-obj-board 'hug (car new-board))
+              (world-lift-location world)
+	      (world-fuckedrocks world)
+	      )))
 
 (define (i-am-dead? world)
  (let ((robot (find-robot world)))
   (or (any (lambda (location) 
            (and (= (car location) (car robot))
-              (= (car location) (- (cadr robot) 1))))
+              (= (cadr location) (- (cadr robot) 1))))
           (world-rocks world))
      (< (world-waterproof world) (world-underwater world)))))
 
-(define (move-robot-board board direction)
- (if (equal? direction 'abort)
-     board
-     (let* ((location (find-robot-board board))
-            (destination
+(define (find-trampolines board)
+ (let ((trampolines '()))
+  (for-each-indexed-matrix 
+   (lambda (e y x) (when (is-trampoline? e) (set! trampolines (cons (list x y) trampolines))))
+   board)
+  trampolines))
+
+(define (find-anus-for-mouth board mouth)
+ (call-with-current-continuation
+  (lambda (k)
+   (for-each-indexed-matrix 
+    (lambda (e y x) (when (and (is-trampoline-out? e) (member  mouth (vector-ref e 2)))
+                (k (list x y))))
+    board)
+   #f)))
+
+(define (find-mouths-for-anus board anus)
+ (let ((trampolines '()))
+  (for-each-indexed-matrix 
+   (lambda (e y x) (when (and (is-trampoline-in? e) (equal? (vector-ref e 2) anus))
+               (set! trampolines (cons (list x y) trampolines))))
+   board)
+  trampolines))
+
+(define (move-robot-board board location direction)
+ (if (member direction '(abort wait))
+     (list board location #f)
+     (let* ((destination
              (case direction
               ((left) (list (- (car location) 1) (cadr location)))
               ((right) (list (+ (car location) 1) (cadr location)))
               ((up) (list (car location) (- (cadr location) 1)))
               ((down) (list (car location) (+ (cadr location) 1)))
-              ((wait) location)
               (else (error "Unsupported move" board direction))))
             (l-x (car location)) (l-y (cadr location))
-            (d-x (car destination)) (d-y (cadr destination)))
+            (d-x (car destination)) (d-y (cadr destination))
+            (dxy (board-ref board d-x d-y)))
       (define (move-it)
        (board-set! (board-set! (copy-board board) d-x d-y 'robot) l-x l-y 'empty))
-      (cond ((and (exists? board d-x d-y)
-                (or (hug? board d-x d-y)
-                   (empty? board d-x d-y)
-                   (open-lift? board d-x d-y)
-                   (earth? board d-x d-y)))
-             (move-it))
+      (cond ((and dxy (member dxy '(hug empty open-lift earth)))
+             (list (move-it) (list d-x d-y) #f))
+            ((equal? dxy 'trampoline-in)
+             (let ((f (find-anus-for-mouth board (vector-ref dxy 1))))
+              (list
+               (foldl (lambda (board l) (board-set! board (car l) (cadr l) 'empty))
+                      (board-set!
+                       (board-set! 
+                        (board-set! 
+                         (copy-board board)
+                         d-x d-y 'empty)
+                        l-x l-y 'empty)
+                       (car f) (cadr f) 'robot)
+                      (find-mouths-for-anus board (vector-ref dxy 2)))
+               (list d-x d-y)
+	       #f
+	       )))
             ((and (= d-x (+ l-x 1))
                 (= d-x d-y)
-                (rock? board d-x d-y)
+                (equal? 'rock dxy)
                 (empty? board (+ l-x 2) l-y))
-             (board-set! (move-it) (+ l-x 2) l-y 'rock))
+             (list (board-set! (move-it) (+ l-x 2) l-y 'rock) (list d-x d-y)
+		   #t
+		   ))
             ((and (= d-x (- l-x 1))
                 (= d-x d-y)
-                (rock? board d-x d-y)
+                (equal? 'rock dxy)
                 (empty? board (- l-x 2) l-y))
-             (board-set! (move-it) (- l-x 2) l-y 'rock))
+             (list (board-set! (move-it) (- l-x 2) l-y 'rock) (list d-x d-y)
+		   #t
+		   ))
             (else #f)))))
 
 (define (find-robot-board board)
@@ -213,64 +281,72 @@
    (for-each-board-index 
     (lambda (x y) (when (lift? board x y) (k (list x y))))
     board)
-   (error "AIN'T GOT NO LIFT?!? WE SHOULD BE DONE!"))))
-
+   #f)))
 
 (define (find-hugs-board board)
-  (vector-fold (lambda (y hugs vector) 
-		 (vector-fold (lambda (x hugs element)
-				(if (eq? element 'hug)
-				    (cons (list x y) hugs)
-				    hugs
-				    )
-				)
-			      hugs
-			      vector
-			      )
+ (vector-fold 
+  (lambda (y hugs vector) 
+   (vector-fold (lambda (x hugs element) (if (eq? element 'hug)
+                                        (cons (list x y) hugs)
+                                        hugs))
+                hugs vector))
+  '() board))
 
-		 )
-	       (list ) board)
-  )
+(define (find-robot world) (world-robot-location world))
 
-(define (find-robot world)
- (find-robot-board (world-board world)))
+(define (find-hugs world) (world-hugs world))
 
-(define (find-hugs world)
- (find-hugs-board (world-board world)))
-
-(define (find-lift world)
- (find-lift-board (world-board world)))
-
+(define (find-lift world) (world-lift-location world))
 
 (define (move-robot world direction)
- (let ((board (move-robot-board (world-board world) direction)))
-  (if board
-      (make-world board
-                  (world-water world)
-                  (world-flooding world)
-                  (world-waterproof world)
-                  (world-underwater world)
-                  (world-iteration world)
-                  (world-rocks world))
+ (let ((board&location 
+        (move-robot-board (world-board world)
+                          (world-robot-location world) direction)))
+  (if board&location
+      (let ((board (car board&location)))
+       (make-world board
+                   (world-water world)
+                   (world-flooding world)
+                   (world-waterproof world)
+                   (world-underwater world)
+                   (world-iteration world)
+                   (world-rocks world)
+                   (cadr board&location)
+                   (find-hugs-board board)
+                   (count-obj-board 'hug board)
+                   (let ((l (world-lift-location world)))
+                    (if (and l (member (board-ref-unchecked board (car l) (cadr l)) '(open-lift closed-lift)))
+                        l
+                        #f))
+		   (caddr board&location)
+		   ;;#f
+		   ))
       #f)))
 
 ;; #*. #
 ;; # R #
 ;; #####
 
-(define (dry-world board) (make-world board +inf.0 +inf.0 +inf.0 0 0 '()))
+(define (dry-world board) 
+ (make-world board +inf.0 +inf.0 +inf.0 0 0 '() 
+             (find-robot-board board)
+             (find-hugs-board board)
+             (count-obj-board 'hug board)
+             (find-lift-board board)
+	     #f
+	     ))
 
 (define faq-2
  (dry-world
   '#(#(wall rock earth empty wall)
-     #(wall empty robot empty wall)
+     #(open-lift empty robot empty wall)
      #(wall wall wall wall wall))))
 
 (define faq-2-1
  (dry-world
   '#(#(wall rock earth empty wall)
      #(wall empty empty rock wall)
-     #(wall empty robot empty wall)
+     #(open-lift empty robot empty wall)
      #(wall wall wall wall wall))))
 
 ;; (world-board faq-2)
@@ -286,7 +362,7 @@
 (define (count-lifts world) 
  (+ (count-obj 'closed-lift world) (count-obj 'open-lift world)))
 
-(define (escaped? world) (= (count-lifts world) 0))
+(define (escaped? world) (not (world-lift-location world)))
 
 (define (done? world path)
  (if (or (eq? 'abort (car path)) (escaped? world))

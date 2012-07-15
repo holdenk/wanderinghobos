@@ -4,3 +4,5 @@
 (require 'simulate)
 (require 'heuristic)
 (require 'search)
+(require 'dog)
+(require 'simulatetests)

@@ -10,7 +10,7 @@
    '#(
       #(wall empty robot empty wall)
       #(wall rock  empty rock wall)
-      #(wall rock  empty rock wall)
+      #(open-lift rock  empty rock wall)
       #(wall wall  wall  wall wall))))
 
 (define smashed-world
@@ -18,7 +18,7 @@
    '#(
       #(wall empty robot empty wall)
       #(wall empty empty empty wall)
-      #(wall rock  rock  rock  wall)
+      #(open-lift rock  rock  rock  wall)
       #(wall wall  wall  wall  wall))))
 
 (test-group "test-simulator"
@@ -30,20 +30,36 @@
    ;;fuckit
    (set! *best-node-so-far* #f)
    (set! *best-node* #f)
+   (set! flw #f)
    ;;i've got a time machine
    (let* 
  		((world (file->world x))
 		 (board (world-board world))
-		 (the-world (best-move-random (file->world x) (+ 100 (* 3 (board-height board) (board-width board))) 3)))
-;;		(display (output-moves (vector-ref the-world 2)))
+ 		 (the-world (fuckerquest-test (file->world x) (+ 250 (* 5 (board-height board) (board-width board))) 3)))
+		(display (output-moves (vector-ref the-world 2)))
 ;;		(display (vector-ref the-world 1))
  	      (score-world (count-hugs (file->world x)) (vector-ref the-world 2)  (vector-ref the-world 1))))
 
-;;(test-group "flood4" 
-;;	    (test 1 (output-moves (vector-ref (best-move (file->world "tests/flood4.map") 1000) 2))))
+(test-group "flood4" 
+	    (test 1 (file->world "tests/contest1.map")))
 
 ;;(test-group "con1" 
 ;;	    (test 1 (output-moves (vector-ref (best-move (file->world "tests/contest1.map") 1000) 2))))
+
+
+(define meworld 
+  (string->world "###########
+#....     #
+#.******* #
+#.\\\\\\\\\\\\\\R#
+#.       .#
+#..*\\\\\\*..#
+#.#*\\\\\\*#.#
+#########L#
+"))
+
+(test-group "should-die"
+	    (test #t (i-am-dead? (simulate (move-robot meworld 'down)))))
 
 (test-group "some-runs" 
 	    (test 212 (foo "tests/contest1.map"))
