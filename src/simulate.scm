@@ -95,7 +95,7 @@
 
 (define (copy-board board) (map-matrix identity board))
 
-(define (execute-square board x y board-out nr-hugs)
+(define (execute-square board x y board-out nr-hugs grow-beard)
  (let ((xy (board-ref-unchecked board x y)))
   (cond ((equal? 'rock xy)
          '()
@@ -103,7 +103,10 @@
                (x+1y (board-ref board (+ x 1) y))
                (x+1y-1 (board-ref board (+ x 1) (- y 1)))
                (x-1y-1 (board-ref board (- x 1) (- y 1)))
-               (x-1y (board-ref board (- x 1) y)))
+               (x-1y (board-ref board (- x 1) y))
+							 (x-1y+1 (board-ref board (- x 1) (+ y 1)))
+							 (xy+1 (board-ref board x (+ y 1)))
+							 (x+1y+1 (board-ref board (+ x 1) (+ y 1))))
           (cond 
            ((and (equal? 'rock xy) (equal? 'empty xy-1))
             (board-set! board-out x y 'empty)
@@ -132,16 +135,45 @@
         ((and (equal? xy 'closed-lift) (= nr-hugs 0))
          (board-set! board-out x y 'open-lift)
          '())
-        (else (board-set! board-out x y xy) '()))))
+				((and (equal? 'beard xy) grow-beard)
+         (let ((xy-1 (board-ref board x (- y 1)))
+               (x+1y (board-ref board (+ x 1) y))
+               (x+1y-1 (board-ref board (+ x 1) (- y 1)))
+               (x-1y-1 (board-ref board (- x 1) (- y 1)))
+               (x-1y (board-ref board (- x 1) y))
+							 (x-1y+1 (board-ref board (- x 1) (+ y 1)))
+							 (xy+1 (board-ref board x (+ y 1)))
+							 (x+1y+1 (board-ref board (+ x 1) (+ y 1))))
+					 (when (equal? 'empty x-1y-1)
+								 (board-set! board-out (- x 1) (- y 1) 'beard))
+					 (when (equal? 'empty xy-1)
+								 (board-set! board-out x (- y 1) 'beard))
+					 (when (equal? 'empty x+1y-1)
+								 (board-set! board-out (+ x 1) (- y 1) 'beard))
+					 (when (equal? 'empty x-1y)
+								 (board-set! board-out (- x 1) y 'beard))
+					 (when (equal? 'empty x+1y)
+								 (board-set! board-out (+ x 1) y 'beard))
+					 (when (equal? 'empty x-1y+1)
+								 (board-set! board-out (- x 1) (+ y 1) 'beard))
+					 (when (equal? 'empty xy+1)
+								 (board-set! board-out x (+ y 1) 'beard))
+					 (when (equal? 'empty x+1y+1)
+								 (board-set! board-out (+ x 1) (+ y 1) 'beard))
+					 (board-set! board-out x y xy)
+					 '()))
+        (else (if (equal? 'empty (board-ref board-out x y))
+									(board-set! board-out x y xy))
+							'()))))
 
-(define (simulate-board board nr-hugs)
+(define (simulate-board board nr-hugs grow-beard)
  ;; Simulate runs in top-down rather than bottom-up order!
  (let ((board (reverse-vector board)))
   (let ((new-board (map-matrix (const 'empty) board))
         (falling-rocks '()))
    (for-each-board-index 
     (lambda (x y) (set! falling-rocks 
-                   (append (execute-square board x y new-board nr-hugs)
+                   (append (execute-square board x y new-board nr-hugs grow-beard)
                            falling-rocks)))
     board)
    (list (reverse-vector new-board)
@@ -154,7 +186,14 @@
        (world-water world))))
 
 (define (simulate world)
- (let ((new-board (simulate-board (world-board world) (world-hug-count world))))
+ (let ((new-board (simulate-board (world-board world)
+																	(world-hug-count world)
+																	(if (not (zero? (world-beard world)))
+																			(= (modulo (world-iteration world)
+																								 (world-beard world))
+																				 (- (world-beard world)
+																						1))
+																			#f))))
   (make-world (car new-board)
               (+ (world-water world)
                  (+ (if (and ;; Fuck, Chicken isn't IEEE 754 complaint
@@ -177,7 +216,8 @@
               (count-obj-board 'hug (car new-board))
               (world-lift-location world)
 	      (world-fuckedrocks world)
-	      )))
+	      (world-beard world)
+				(world-razors world))))
 
 (define (i-am-dead? world)
  (let ((robot (find-robot world)))
@@ -311,6 +351,8 @@
                         l
                         #f))
 		   (caddr board&location)
+			 (world-beard world)
+			 (world-razors world)
 		   ;;#f
 		   ))
       #f)))
@@ -325,8 +367,9 @@
              (find-hugs-board board)
              (count-obj-board 'hug board)
              (find-lift-board board)
-	     #f
-	     ))
+						 #f
+						 0
+						 0))
 
 (define faq-2
  (dry-world
