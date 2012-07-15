@@ -3,21 +3,28 @@
 (declare (unit heuristic))
 (declare (uses parse-input dog))
 (use vector-lib)
+(define flw #f)
 
 (define (fairly-simple-hobofloydwarshall-world initialhugs path world)
   (define DISTCOST 1.1)
-  (simple-hobofloydwarshall-world initialhugs path world DISTCOST)
-)
-(define flw #f)
-(define (simple-hobofloydwarshall-world initialhugs path world DISTCOST)
+  (simple-hobofloydwarshall-world initialhugs path world DISTCOST (lambda (w) (or (world-fuckedrocks w) (not (null? (world-rocks w)))))))
+
+(define (once-hobofloydwarshall-world initialhugs path world)
+  (define DISTCOST 1.1)
+  (simple-hobofloydwarshall-world initialhugs path world DISTCOST (lambda (w) #f)))
+
+
+;; (define (once-hobo-world initialhugs path world)
+;;   (define DISTCOST 1.1)
+;;   (simple-hobofloydwarshall-world initialhugs path world DISTCOST
+(define (simple-hobofloydwarshall-world initialhugs path world DISTCOST fn)
 (define cost
  (if (escaped? world)
      (- (score-world initialhugs path world))
      ;;Also they give you a lolipop after! OMG Ponies
      (begin
        (if (or
-	    (world-fuckedrocks world);;Add something to see if the robot moved a rock here
-	    (not (null? (world-rocks world)))
+	    (fn world)
 	    (not flw))
 	   (set! flw (hobofloydwarshall (world-board world)))
 	   #f
@@ -116,7 +123,7 @@ cost
 (define heuristic-world fairly-simple-heuristic-world)
 ;;(define heuristic-world fairly-simple-hobofloydwarshall-world)
 
-(define heuristic-list-test (list fairly-simple-heuristic-world  very-simple-heuristic-world))
+(define heuristic-list-test (list fairly-simple-heuristic-world  very-simple-heuristic-world once-hobofloydwarshall-world))
 (define heuristic-list-prod (list fairly-simple-heuristic-world  very-simple-heuristic-world fairly-simple-hobofloydwarshall-world))
 
 (define (score-world initialhugs path world)
