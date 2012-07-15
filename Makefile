@@ -1,5 +1,5 @@
-CSCFLAGS = -O2 -profile
-# -O4 -optimize-leaf-routines -u -unboxing  -no-argc-checks -no-bound-checks -no-procedure-checks -local -profile
+CSCFLAGS = -O2 
+# -O4 -optimize-leaf-routines -u -unboxing  -no-argc-checks -no-bound-checks -no-procedure-checks -local
 CSC = csc $(CSCFLAGS)
 
 IGNORES = src/main.scm src/test-runner.scm src/loadme.scm src/play-map.scm
