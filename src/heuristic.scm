@@ -116,6 +116,8 @@ cost
 (define heuristic-world fairly-simple-heuristic-world)
 ;;(define heuristic-world fairly-simple-hobofloydwarshall-world)
 
+(define heuristic-list (list fairly-simple-heuristic-world  fairly-simple-hobofloydwarshall-world))
+
 (define (score-world initialhugs path world)
   (score-world-with-min-hug-value initialhugs path world 25)
 )

@@ -139,6 +139,18 @@
   restarts)
  *best-node*)
 
+(define (best-move-random-with-no-repeats-and-list world n restarts) 
+ (for-each-n (lambda _ 
+	       (map (lambda (heuristic) 
+              (let ((r (pairing-heap-min (best-moves heuristic world n #t (world->seen-map world)))))
+               (if (or (not *best-node*) (< (vector-ref r 0) (vector-ref *best-node* 0)))
+                   (set! *best-node* r)
+                   #f))) heuristic-list)
+	      )
+  restarts)
+ *best-node*)
+
+
 (define (pairing-heap->list heap)
  (let loop ((heap heap) (r '()))
   (if (pairing-heap-empty? heap)
