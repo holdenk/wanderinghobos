@@ -8,7 +8,7 @@
        (initialhugs (count-hugs w))
        (wheight (board-height board))
        (wwidth  (board-width board))
-       (themoves (reverse (vector-ref (best-move-random-with-no-repeats  w (+ 250 (* 3 (*  wwidth))) 3) 2))))
+       (themoves (reverse (vector-ref (fuckerquest-test  w (+ 250 (* 3 (*  wwidth))) 3) 2))))
   (display w)
   (foldl (lambda (s m)
 	   ;;ouput the list of murh costs

@@ -7,17 +7,17 @@
 
 (define (fairly-simple-hobofloydwarshall-world initialhugs path world)
   (define DISTCOST 1.1)
-  (simple-hobofloydwarshall-world initialhugs path world DISTCOST (lambda (w) (or (world-fuckedrocks w) (not (null? (world-rocks w)))))))
+  (simple-hobofloydwarshall-world initialhugs path world DISTCOST (lambda (w) (or (world-fuckedrocks w) (not (null? (world-rocks w))))) #t))
 
 (define (once-hobofloydwarshall-world initialhugs path world)
   (define DISTCOST 1.1)
-  (simple-hobofloydwarshall-world initialhugs path world DISTCOST (lambda (w) #f)))
+  (simple-hobofloydwarshall-world initialhugs path world DISTCOST (lambda (w) #f) #f))
 
 
 ;; (define (once-hobo-world initialhugs path world)
 ;;   (define DISTCOST 1.1)
 ;;   (simple-hobofloydwarshall-world initialhugs path world DISTCOST
-(define (simple-hobofloydwarshall-world initialhugs path world DISTCOST fn)
+(define (simple-hobofloydwarshall-world initialhugs path world DISTCOST fn doreachabletest)
 (define cost
  (if (escaped? world)
      (- (score-world initialhugs path world))
@@ -39,6 +39,12 @@
 	   (- 
 	    (* DISTCOST (floyd-dist-to-hug flw world))
 	    (score-world initialhugs path world)
+	    (if doreachabletest
+		(* 5 (reachable-hugs flw world))
+		;;remember kids, drugs arefun!
+		0;;we can't do reachability if we don't update the happy pandas
+		;;so yah sad panda face
+		)
 	    )
 	   )
        )))
@@ -124,7 +130,8 @@ cost
 ;;(define heuristic-world fairly-simple-hobofloydwarshall-world)
 
 (define heuristic-list-test (list fairly-simple-heuristic-world  very-simple-heuristic-world once-hobofloydwarshall-world))
-(define heuristic-list-prod (list fairly-simple-heuristic-world  very-simple-heuristic-world fairly-simple-hobofloydwarshall-world))
+;;(define heuristic-list-test (list fairly-simple-hobofloydwarshall-world))
+(define heuristic-list-prod (list fairly-simple-heuristic-world  very-simple-heuristic-world once-hobofloydwarshall-world))
 
 (define (score-world initialhugs path world)
   (score-world-with-min-hug-value initialhugs path world 25)
@@ -216,6 +223,19 @@ cost
 					(path-cost (car robot) (cadr robot) (car hug) (cadr hug) ftw (world-board world))
 					(min currentdist (path-cost (car robot) (cadr robot) (car hug) (cadr hug) ftw (world-board world)))
 					)) 0 hugs)
+      )
+  )
+
+;;Its a me MARIO!
+;;by the way the K stands for kwality
+;;and remember your drug testing kits from dance safe kids!
+(define (reachable-hugs ftw world)
+  (let
+      (
+       (robot (find-robot world))
+       (hugs (find-hugs world))
+      )
+    (length (filter (lambda (h) (not (eq? +inf.0 (path-cost (car robot) (cadr robot) (car h) (cadr h) ftw (world-board world))))) hugs))
       )
   )
 
