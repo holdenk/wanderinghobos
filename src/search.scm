@@ -142,6 +142,8 @@
 (define (best-move-random-with-no-repeats-and-list world n restarts heuristic-list) 
  (for-each-n (lambda _ 
 	       (map (lambda (heuristic) 
+		      ;;Fuckit
+		      (set! flw #f)
               (let ((r (pairing-heap-min (best-moves heuristic world n #t (world->seen-map world)))))
                (if (or (not *best-node*) (< (vector-ref r 0) (vector-ref *best-node* 0)))
                    (set! *best-node* r)
