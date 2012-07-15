@@ -41,23 +41,37 @@
  	      (score-world (count-hugs (file->world x)) (vector-ref the-world 2)  (vector-ref the-world 1))))
 
 (test-group "flood4" 
-	    (test 1 (file->world "tests/contest1.map")))0
+	    (test 1 (file->world "tests/contest1.map")))
 
 ;;(test-group "con1" 
 ;;	    (test 1 (output-moves (vector-ref (best-move (file->world "tests/contest1.map") 1000) 2))))
 
 
+(define meworld 
+  (string->world "###########
+#....     #
+#.******* #
+#.\\\\\\\\\\\\\\R#
+#.       .#
+#..*\\\\\\*..#
+#.#*\\\\\\*#.#
+#########L#
+"))
+
+(test-group "should-die"
+	    (test #t (i-am-dead? (simulate (move-robot meworld 'down)))))
+
 (test-group "some-runs" 
-	    ;; (test 212 (foo "tests/contest1.map"))
-	    ;; (test 281 (foo "tests/contest2.map"))
-	    ;; (test 275 (foo "tests/contest3.map"))
-	    ;; (test 575 (foo "tests/contest4.map"))
-	    ;; (test 1303 (foo "tests/contest5.map"))
-	    ;; (test 1177 (foo "tests/contest6.map"))
-	    ;; (test 869 (foo "tests/contest7.map"))
-	    ;; (test 1973 (foo "tests/contest8.map"))
-	    ;; (test 3093 (foo "tests/contest9.map"))
-	    ;; (test 3643 (foo "tests/contest10.map"))
+	    (test 212 (foo "tests/contest1.map"))
+	    (test 281 (foo "tests/contest2.map"))
+	    (test 275 (foo "tests/contest3.map"))
+	    (test 575 (foo "tests/contest4.map"))
+	    (test 1303 (foo "tests/contest5.map"))
+	    (test 1177 (foo "tests/contest6.map"))
+	    (test 869 (foo "tests/contest7.map"))
+	    (test 1973 (foo "tests/contest8.map"))
+	    (test 3093 (foo "tests/contest9.map"))
+	    (test 3643 (foo "tests/contest10.map"))
 	    (test 945  (foo "tests/flood1.map"))
 	    (test 281  (foo "tests/flood2.map"))
 	    (test 1303  (foo "tests/flood3.map"))

@@ -25,6 +25,7 @@
 			(display (heuristic-world initialhugs (list ) newworld)))
 		    (display "\n")))
 		moves)
+	   
 	   (cond
 	    ((eq? m 'wait)
 	     (let ((r (simulate s)))
@@ -35,6 +36,9 @@
 	     s)
 	    (else
 	     (let ((r (simulate (move-robot s m))))
+	       (display "i-am-dead?: ")
+	       (display (i-am-dead? r))
+	       (display "\n")
 	       (display r)
 	       r))))
 	 w
