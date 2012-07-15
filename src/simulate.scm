@@ -176,7 +176,7 @@
               (world-hugs world)
               (count-obj-board 'hug (car new-board))
               (world-lift-location world)
-	      #f
+	      (world-fuckedrocks world)
 	      )))
 
 (define (i-am-dead? world)
