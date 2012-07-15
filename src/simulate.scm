@@ -249,8 +249,10 @@
                 (world-fuckedrocks world)
                 (world-beard world)
                 (+ (world-razors world)
-                   (- (count-obj-board 'razor (world-board board))
-                      (count-obj-board 'razor (car new-board)))))))
+                   (- (count-obj-board 'razor
+                                       (world-board world))
+                      (count-obj-board 'razor
+                                       (car new-board)))))))
 
 (define (i-am-dead? world)
   (let ((robot (find-robot world)))
