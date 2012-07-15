@@ -9,7 +9,7 @@ TEST_FILES = $(shell find tests/ -iname \*.map)
 
 PRODUCT = lifter
 
-STATIC = install PACKAGES-TESTING README Makefile
+STATIC = install PACKAGES-TESTING README Makefile CHICKEN-EGGS
 
 TEST_CASES = contest1
 

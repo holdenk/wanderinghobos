@@ -1,4 +1,5 @@
 #!/bin/bash
+sudo chicken-install `cat CHICKEN-EGGS`
 if [ ! -f lifter ]
 then
 		echo "Building..."
