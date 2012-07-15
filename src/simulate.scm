@@ -1,3 +1,4 @@
+; -*- indent-tabs-mode: nil -*-
 (declare (unit simulate))
 
 (declare (uses parse-input))
