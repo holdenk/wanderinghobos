@@ -139,7 +139,7 @@
   restarts)
  *best-node*)
 
-(define (best-move-random-with-no-repeats-and-list world n restarts) 
+(define (best-move-random-with-no-repeats-and-list world n restarts heuristic-list) 
  (for-each-n (lambda _ 
 	       (map (lambda (heuristic) 
               (let ((r (pairing-heap-min (best-moves heuristic world n #t (world->seen-map world)))))
@@ -149,6 +149,14 @@
 	      )
   restarts)
  *best-node*)
+
+(define (fuckerquest-test world n restarts)
+  (best-move-random-with-no-repeats-and-list world n restarts heuristic-list-test)
+)
+
+(define (fuckerquest-prod world n restarts)
+  (best-move-random-with-no-repeats-and-list world n restarts heuristic-list-prod)
+)
 
 
 (define (pairing-heap->list heap)
