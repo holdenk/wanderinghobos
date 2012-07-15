@@ -113,7 +113,8 @@
             ((eq? sy 'right) #\R)
             ((eq? sy 'up) #\U )
             ((eq? sy 'wait) #\W)
-            ((eq? sy 'abort) #\A)))
+            ((eq? sy 'abort) #\A)
+						((eq? sy 'shave) #\S)))
   (list->string (map sym-to-char (reverse list))))
 
 (define-syntax (define-gs-record x r c)
@@ -258,6 +259,7 @@
         ((eq? char #\.) 'earth)
 				((eq? char #\W) 'beard)
 				((eq? char #\!) 'razor)
+				((eq? char #\@) 'horock)
         ((eq? char #\space) 'empty)
         ((member char (string->list "ABCDEFGHI")) (make-trampoline-in char #f))
         ((member char (string->list "123456789")) (make-trampoline-out char '()))

@@ -78,8 +78,22 @@
 (define (world-length world)
   (board-length (world-board world)))
 
-(define (robot? board x y) (equal? (board-ref board x y) 'robot))
-(define (rock? board x y) (equal? (board-ref board x y) 'rock))
+(define (is-robot? item) (equal? item 'robot))
+(define (is-rock-like? item) (or (is-rock? item) (is-horock? item)))
+(define (is-horock? item) (equal? item 'horock))
+(define (is-rock? item) (equal? item 'rock))
+(define (is-empty? item) (equal? item 'empty))
+(define (is-closed-lift? item) (equal? item 'closed-lift))
+(define (is-open-lift? item) (equal? item 'open-lift))
+(define (is-lift? item) (or (is-closed-lift? item) (is-open-lift? item)))
+(define (is-earth? item) (equal? item 'earth))
+(define (is-wall? item) (equal? item 'wall))
+(define (is-hug? item) (equal? item 'hug))
+(define (is-beard? item) (equal? item 'beard))
+
+(define (robot? board x y) (is-robot? (board-ref board x y)))
+(define (rock? board x y) (is-rock? (board-ref board x y)))
+(define (horock? board x y) (is-horock? (board-ref board x y)))
 (define (empty? board x y) (equal? (board-ref board x y) 'empty))
 (define (closed-lift? board x y) (equal? (board-ref board x y) 'closed-lift))
 (define (open-lift? board x y) (equal? (board-ref board x y) 'open-lift))
@@ -89,6 +103,7 @@
 (define (lift? board x y) (or (open-lift? board x y) (closed-lift? board x y)))
 (define (trampoline-in? board x y) (is-trampoline-in? (board-ref board x y)))
 (define (trampoline-out? board x y) (is-trampoline-out? (board-ref board x y)))
+(define (beard? board x y) (is-beard? (board-ref board x y)))
 
 (define (not-exists? board x y) (not (board-ref board x y)))
 (define (exists? board x y) (board-ref board x y))
@@ -103,9 +118,9 @@
 
 (define (copy-board board) (map-matrix identity board))
 
-(define (execute-square board x y board-out nr-hugs grow-beard)
+(define (execute-square board x y board-out nr-hugs grow-beard moving-rocks)
  (let ((xy (board-ref-unchecked board x y)))
-  (cond ((equal? 'rock xy)
+  (cond ((is-rock-like? xy)
          '()
          (let ((xy-1 (board-ref board x (- y 1)))
                (x+1y (board-ref board (+ x 1) y))
@@ -116,28 +131,28 @@
 							 (xy+1 (board-ref board x (+ y 1)))
 							 (x+1y+1 (board-ref board (+ x 1) (+ y 1))))
           (cond 
-           ((and (equal? 'rock xy) (equal? 'empty xy-1))
+           ((and (is-rock-like? xy) (equal? 'empty xy-1))
             (board-set! board-out x y 'empty)
-            (board-set! board-out x (- y 1) 'rock)
+            (board-set! board-out x (- y 1) xy)
             (list (list x (- y 1))))
-           ((and (equal? xy 'rock) (equal? xy-1 'rock)
+           ((and (is-rock-like? xy) (is-rock-like? xy-1)
                (equal? x+1y 'empty) (equal? x+1y-1 'empty))
             (board-set! board-out x y 'empty)
-            (board-set! board-out (+ x 1) (- y 1) 'rock)
+            (board-set! board-out (+ x 1) (- y 1) xy)
             (list (list (+ x 1) (- y 1))))
-           ((and (equal? xy 'rock)
-               (equal? xy-1 'rock)
+           ((and (is-rock-like? xy)
+               (is-rock-like? xy-1)
                (or (and x+1y (not (equal? 'empty x+1y)))
                   (and x+1y-1 (not (equal? 'empty x+1y-1))))
                (equal? x-1y 'empty)
                (equal? x-1y-1 'empty))
             (board-set! board-out x y 'empty)
-            (board-set! board-out (- x 1) (- y 1) 'rock)
+            (board-set! board-out (- x 1) (- y 1) xy)
             (list (list (- x 1) (- y 1))))
-           ((and (equal? xy 'rock) (equal? xy-1 'hug)
+           ((and (is-rock-like? xy) (equal? xy-1 'hug)
                (equal? x+1y 'empty) (equal? x+1y-1 'empty))
             (board-set! board-out x y 'empty)
-            (board-set! board-out (+ x 1) (- y 1) 'rock)
+            (board-set! board-out (+ x 1) (- y 1) xy)
             (list (list (+ x 1) (- y 1))))
            (else (board-set! board-out x y xy) '()))))
         ((and (equal? xy 'closed-lift) (= nr-hugs 0))
@@ -174,14 +189,20 @@
 									(board-set! board-out x y xy))
 							'()))))
 
-(define (simulate-board board nr-hugs grow-beard)
+(define (simulate-board board nr-hugs grow-beard moving-rocks)
  ;; Simulate runs in top-down rather than bottom-up order!
  (let ((board (reverse-vector board)))
   (let ((new-board (map-matrix (const 'empty) board))
         (falling-rocks '()))
    (for-each-board-index 
     (lambda (x y) (set! falling-rocks 
-                   (append (execute-square board x y new-board nr-hugs grow-beard)
+                   (append (execute-square board
+																					 x
+																					 y
+																					 new-board
+																					 nr-hugs
+																					 grow-beard
+																					 moving-rocks)
                            falling-rocks)))
     board)
    (list (reverse-vector new-board)
@@ -201,7 +222,8 @@
 																								 (world-beard world))
 																				 (- (world-beard world)
 																						1))
-																			#f))))
+																			#f)
+																	(world-rocks world))))
   (make-world (car new-board)
               (+ (world-water world)
                  (+ (if (and ;; Fuck, Chicken isn't IEEE 754 complaint
@@ -260,52 +282,73 @@
   trampolines))
 
 (define (move-robot-board board location direction)
- (if (member direction '(abort wait))
-     (list board location #f)
-     (let* ((destination
-             (case direction
-              ((left) (list (- (car location) 1) (cadr location)))
-              ((right) (list (+ (car location) 1) (cadr location)))
-              ((up) (list (car location) (- (cadr location) 1)))
-              ((down) (list (car location) (+ (cadr location) 1)))
-              (else (error "Unsupported move" board direction))))
-            (l-x (car location)) (l-y (cadr location))
-            (d-x (car destination)) (d-y (cadr destination))
-            (dxy (board-ref board d-x d-y)))
-      (define (move-it)
-       (board-set! (board-set! (copy-board board) d-x d-y 'robot) l-x l-y 'empty))
-      (cond ((and dxy (member dxy '(hug empty open-lift earth)))
-             (list (move-it) (list d-x d-y) #f))
-            ((equal? dxy 'trampoline-in)
-             (let ((f (find-anus-for-mouth board (vector-ref dxy 1))))
-              (list
-               (foldl (lambda (board l) (board-set! board (car l) (cadr l) 'empty))
-                      (board-set!
-                       (board-set! 
-                        (board-set! 
-                         (copy-board board)
-                         d-x d-y 'empty)
-                        l-x l-y 'empty)
-                       (car f) (cadr f) 'robot)
-                      (find-mouths-for-anus board (vector-ref dxy 2)))
-               (list d-x d-y)
-	       #f
-	       )))
-            ((and (= d-x (+ l-x 1))
-                (= d-x d-y)
-                (equal? 'rock dxy)
-                (empty? board (+ l-x 2) l-y))
-             (list (board-set! (move-it) (+ l-x 2) l-y 'rock) (list d-x d-y)
-		   #t
-		   ))
-            ((and (= d-x (- l-x 1))
-                (= d-x d-y)
-                (equal? 'rock dxy)
-                (empty? board (- l-x 2) l-y))
-             (list (board-set! (move-it) (- l-x 2) l-y 'rock) (list d-x d-y)
-		   #t
-		   ))
-            (else #f)))))
+ (cond ((member direction '(abort wait))
+				(list board location #f))
+			 ((equal? direction 'shave)
+				(list (let* ((board-out (copy-board board))
+										 (x (car location))
+										 (y (cadr location))
+										 (neighbours (list (cons x (- y 1))
+																			 (cons (+ x 1) y)
+																			 (cons (+ x 1) (- y 1))
+																			 (cons (- x 1) (- y 1))
+																			 (cons (- x 1) y)
+																			 (cons (- x 1) (+ y 1))
+																			 (cons x (+ y 1))
+																			 (cons (+ x 1) (+ y 1)))))
+								(foldl (lambda (cur-board point)
+												 (if (beard? board (car point) (cdr point))
+														 (board-set! cur-board
+																				 (car point)
+																				 (cdr point)
+																				 'empty)
+														 cur-board))
+											 board-out
+											 neighbours))
+							location
+							#f))
+			 (else
+				(let* ((destination
+								(case direction
+									((left) (list (- (car location) 1) (cadr location)))
+									((right) (list (+ (car location) 1) (cadr location)))
+									((up) (list (car location) (- (cadr location) 1)))
+									((down) (list (car location) (+ (cadr location) 1)))
+									(else (error "Unsupported move" board direction))))
+							 (l-x (car location)) (l-y (cadr location))
+							 (d-x (car destination)) (d-y (cadr destination))
+							 (dxy (board-ref board d-x d-y)))
+					(define (move-it)
+						(board-set! (board-set! (copy-board board) d-x d-y 'robot) l-x l-y 'empty))
+					(cond ((and dxy (member dxy '(hug empty open-lift earth)))
+								 (list (move-it) (list d-x d-y) #f))
+								((equal? dxy 'trampoline-in)
+								 (let ((f (find-anus-for-mouth board (vector-ref dxy 1))))
+									 (list
+										(foldl (lambda (board l) (board-set! board (car l) (cadr l) 'empty))
+													 (board-set!
+														(board-set! 
+														 (board-set! 
+															(copy-board board)
+															d-x d-y 'empty)
+														 l-x l-y 'empty)
+														(car f) (cadr f) 'robot)
+													 (find-mouths-for-anus board (vector-ref dxy 2)))
+										(list d-x d-y)
+										#f)))
+								((and (= d-x (+ l-x 1))
+											(= d-x d-y)
+											(is-rock-like? dxy)
+											(empty? board (+ l-x 2) l-y))
+								 (list (board-set! (move-it) (+ l-x 2) l-y 'dxy) (list d-x d-y)
+											 #t))
+								((and (= d-x (- l-x 1))
+											(= d-x d-y)
+											(is-rock-like? dxy)
+											(empty? board (- l-x 2) l-y))
+								 (list (board-set! (move-it) (- l-x 2) l-y 'dxy) (list d-x d-y)
+											 #t))
+								(else #f))))))
 
 (define (find-robot-board board)
  (call-with-current-continuation
@@ -339,31 +382,39 @@
 (define (find-lift world) (world-lift-location world))
 
 (define (move-robot world direction)
- (let ((board&location 
-        (move-robot-board (world-board world)
-                          (world-robot-location world) direction)))
-  (if board&location
-      (let ((board (car board&location)))
-       (make-world board
-                   (world-water world)
-                   (world-flooding world)
-                   (world-waterproof world)
-                   (world-underwater world)
-                   (world-iteration world)
-                   (world-rocks world)
-                   (cadr board&location)
-                   (find-hugs-board board)
-                   (count-obj-board 'hug board)
-                   (let ((l (world-lift-location world)))
-                    (if (and l (member (board-ref-unchecked board (car l) (cadr l)) '(open-lift closed-lift)))
-                        l
-                        #f))
-		   (caddr board&location)
-			 (world-beard world)
-			 (world-razors world)
-		   ;;#f
-		   ))
-      #f)))
+	(if (or (> (world-razors world) 0)
+					(not (equal? 'shave direction)))
+			(let ((board&location 
+						 (move-robot-board (world-board world)
+															 (world-robot-location world) direction)))
+				(if board&location
+						(let ((board (car board&location)))
+							(make-world board
+													(world-water world)
+													(world-flooding world)
+													(world-waterproof world)
+													(world-underwater world)
+													(world-iteration world)
+													(world-rocks world)
+													(cadr board&location)
+													(find-hugs-board board)
+													(count-obj-board 'hug board)
+													(let ((l (world-lift-location world)))
+														(if (and l (member (board-ref-unchecked board
+																																		(car l)
+																																		(cadr l))
+																							 '(open-lift closed-lift)))
+																l
+																#f))
+													(caddr board&location)
+													(world-beard world)
+													(if (equal? 'shave direction)
+															(- (world-razors world) 1)
+															(world-razors world))
+													;;#f
+													))
+						#f))
+			#f))
 
 ;; #*. #
 ;; # R #

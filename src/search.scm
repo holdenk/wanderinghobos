@@ -1,7 +1,7 @@
 (declare (unit search))
 (declare (uses simulate pairing-heap))
 (use srfi-1)
-(use list-utils random-bsd sequences)
+(use list-utils random-bsd sequences amb amb-extras)
 
 ;; Use signal handler, process until interrupt
 ;; Don't go somewhere twice
@@ -39,7 +39,7 @@
 (define (deal x) (n-random-elements-without-replacement (length x) x))
 
 (define moves-directions '(left right up down))
-(define moves-other '(abort wait))
+(define moves-other '(abort wait shave))
 (define moves (append moves-directions moves-other))
 
 (define *best-node-so-far* #f)
@@ -259,6 +259,7 @@
 (define (test2) (best-move (file->world "../tests/contest1.map") 30))
 (define (test3) (best-move (file->world "../tests/contest2.map") 30))
 
+
 ;; (best-move-with-no-repeats (file->world "../tests/contest1.map") 30)
 (define (exhaustive-search world)
   (define (e-search world moves1 score max_length initial_hugs)
@@ -269,3 +270,42 @@
   (let ((max_path_length (* (board-height (world-board world)) (board-width (world-board world)))))
  ;   max_path_length))
     (e-search world '() 0 max_path_length (count-hugs world)))))
+(define (maximump p l)
+ (define (m p l x)
+  (if (null? l) x
+      (if (> (p (car l)) (p x)) (m p (cdr l) (car l)) (m p (cdr l) x))))
+ (when (not (null? l)) (m p (cdr l) (car l))))
+
+(define (minimump p l)
+ (define (m p l x)
+  (if (null? l) x
+      (if (< (p (car l)) (p x)) (m p (cdr l) (car l)) (m p (cdr l) x))))
+ (when (not (null? l)) (m p (cdr l) (car l))))
+
+(define (amb-fail-unless e) (amb-assert e) e)
+
+(define (solve-dfs world nr-moves)
+ (all-of 
+  (let loop ((path '()) (world world))
+   (if (= (length path) nr-moves)
+       (amb)
+       (let* ((move (choose moves-directions))
+              (world1 (simulate (amb-fail-unless (move-robot world move))))
+              (path1 (cons move path)))
+        (amb-assert (not (i-am-dead? world1)))
+        (if (done? world1 path1)
+            (list path1 world1 (- (score-world (count-hugs world) path1 world1)))
+            (amb (list path1 world1 (- (score-world (count-hugs world) path1 world1))) (loop path1 world1))))))))
+
+(define (move-robot* world moves)
+ (foldl (lambda (w l) 
+         (let ((a (simulate (move-robot w l))))
+          (display (i-am-dead? a))(newline)
+          (pp a)(newline)
+          a)) world moves))
+
+(define (dfs-example)
+ (solve-dfs faq-2 3)
+ (define a (file->world "../tests/contest1.map"))
+ (define b (solve-dfs a 7))
+ (maximump third b))
