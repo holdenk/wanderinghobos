@@ -3,21 +3,28 @@
 (declare (unit heuristic))
 (declare (uses parse-input dog))
 (use vector-lib)
-
-(define (fairly-simple-hobofloydwarshall-world initialhugs path world)
-  (define DISTCOST 1.1)
-  (simple-hobofloydwarshall-world initialhugs path world DISTCOST)
-)
 (define flw #f)
-(define (simple-hobofloydwarshall-world initialhugs path world DISTCOST)
+
+(define (fairly-simple-hobofloydwarshall-world score initialhugs path world)
+  (define DISTCOST 1.1)
+  (simple-hobofloydwarshall-world score initialhugs path world DISTCOST (lambda (w) (or (world-fuckedrocks w) (not (null? (world-rocks w))))) #t))
+
+(define (once-hobofloydwarshall-world score initialhugs path world)
+  (define DISTCOST 1.1)
+  (simple-hobofloydwarshall-world score initialhugs path world DISTCOST (lambda (w) #f) #f))
+
+
+;; (define (once-hobo-world initialhugs path world)
+;;   (define DISTCOST 1.1)
+;;   (simple-hobofloydwarshall-world initialhugs path world DISTCOST
+(define (simple-hobofloydwarshall-world score initialhugs path world DISTCOST fn doreachabletest)
 (define cost
  (if (escaped? world)
-     (- (score-world initialhugs path world))
+     (- score)
      ;;Also they give you a lolipop after! OMG Ponies
      (begin
        (if (or
-	    #t;;Add something to see if the robot moved a rock here
-	    (not (null? (world-rocks world)))
+	    (fn world)
 	    (not flw))
 	   (set! flw (hobofloydwarshall (world-board world)))
 	   #f
@@ -26,52 +33,58 @@
 	   ;;We got all of teh hugs
 	   (- 
 	    (* DISTCOST (floyd-dist-to-lift flw world))
-	    (score-world initialhugs path world)
+	    score
 	    )
 	   ;;We still have hugs
 	   (- 
 	    (* DISTCOST (floyd-dist-to-hug flw world))
-	    (score-world initialhugs path world)
+	    score
+	    (if doreachabletest
+		(* 5 (reachable-hugs flw world))
+		;;remember kids, drugs arefun!
+		0;;we can't do reachability if we don't update the happy pandas
+		;;so yah sad panda face
+		)
 	    )
 	   )
        )))
 cost
 )
 
-(define (fairly-simple-fifty-heuristic-world initialhugs path world)
+(define (fairly-simple-fifty-heuristic-world score initialhugs path world)
   (define MANHATTANDISTCOST 1.1)
-  (simple-minhugvalue-heuristic-world initialhugs path world MANHATTANDISTCOST 50)
+  (simple-minhugvalue-heuristic-world score initialhugs path world MANHATTANDISTCOST 50)
     )
-(define (fairly-simple-heuristic-world initialhugs path world)
+(define (fairly-simple-heuristic-world score initialhugs path world)
   (define MANHATTANDISTCOST 1.1)
-  (simple-heuristic-world initialhugs path world MANHATTANDISTCOST)
+  (simple-heuristic-world score initialhugs path world MANHATTANDISTCOST)
     )
-(define (very-simple-heuristic-world initialhugs path world)
+(define (very-simple-heuristic-world score initialhugs path world)
   (define MANHATTANDISTCOST 1)
-  (simple-heuristic-world initialhugs path world MANHATTANDISTCOST)
+  (simple-heuristic-world score initialhugs path world MANHATTANDISTCOST)
     )
-(define (simple-heuristic-world initialhugs path world MANHATTANDISTCOST)
+(define (simple-heuristic-world score initialhugs path world MANHATTANDISTCOST)
  (if (escaped? world)
-     (- (score-world initialhugs path world))
+     (- score)
      ;;Also they give you a lolipop after! OMG Ponies
      (if (eq? 0 (count-hugs world))
          ;;We got all of teh hugs
          (- 
           (* MANHATTANDISTCOST (manhattan-dist-to-lift world))
-          (score-world initialhugs path world)
+	  score
           )
          ;;We still have hugs
          (- 
           (* MANHATTANDISTCOST (manhattan-dist-to-hug world))
-          (score-world initialhugs path world)
+	  score
           )
          )
      )
  )
 
-(define (simple-minhugvalue-heuristic-world initialhugs path world MANHATTANDISTCOST minhugvalue)
+(define (simple-minhugvalue-heuristic-world score initialhugs path world MANHATTANDISTCOST minhugvalue)
  (if (escaped? world)
-     (- (score-world initialhugs path world))
+     (- score)
      ;;Also they give you a lolipop after! OMG Ponies
      (if (eq? 0 (count-hugs world))
          ;;We got all of teh hugs
@@ -90,7 +103,7 @@ cost
 
 
 ;;Hugs remaining and makes sexy
-(define (crazy-heuristic-world initialhugs path world)
+(define (crazy-heuristic-world score initialhugs path world)
   (let ((hugcount (count-hugs world)))
     (if (escaped? world)
 	(- (score-world initialhugs path world))
@@ -115,6 +128,10 @@ cost
 ;;(define heuristic-world fairly-simple-heuristic-world)
 (define heuristic-world fairly-simple-heuristic-world)
 ;;(define heuristic-world fairly-simple-hobofloydwarshall-world)
+
+(define heuristic-list-test (list fairly-simple-heuristic-world  very-simple-heuristic-world once-hobofloydwarshall-world))
+;;(define heuristic-list-test (list fairly-simple-hobofloydwarshall-world))
+(define heuristic-list-prod (list fairly-simple-heuristic-world  very-simple-heuristic-world once-hobofloydwarshall-world))
 
 (define (score-world initialhugs path world)
   (score-world-with-min-hug-value initialhugs path world 25)
@@ -206,6 +223,19 @@ cost
 					(path-cost (car robot) (cadr robot) (car hug) (cadr hug) ftw (world-board world))
 					(min currentdist (path-cost (car robot) (cadr robot) (car hug) (cadr hug) ftw (world-board world)))
 					)) 0 hugs)
+      )
+  )
+
+;;Its a me MARIO!
+;;by the way the K stands for kwality
+;;and remember your drug testing kits from dance safe kids!
+(define (reachable-hugs ftw world)
+  (let
+      (
+       (robot (find-robot world))
+       (hugs (find-hugs world))
+      )
+    (length (filter (lambda (h) (not (eq? +inf.0 (path-cost (car robot) (cadr robot) (car h) (cadr h) ftw (world-board world))))) hugs))
       )
   )
 

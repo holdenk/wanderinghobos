@@ -14,7 +14,7 @@
 					  (if (> (length (command-line-arguments)) 0)
 					  (best-move world (+ 100 (* 2 (* wheight wwidth))))
 					  ;;Otherwise run forver
-					  (best-move-random-with-no-repeats world (+ 250 (* 3 (* wheight wwidth))) +inf.0)
+					  (fuckerquest-prod world (+ 250 (* 3 (* wheight wwidth))) +inf.0)
 					  )
 					  2))))
 	(display (output-moves moves)))

@@ -141,7 +141,7 @@
           (list %define getter (list %getter-with-setter getter setter))))
       fields))))
 
-(define-gs-record world board water flooding waterproof underwater iteration rocks robot-location hugs hug-count lift-location)
+(define-gs-record world board water flooding waterproof underwater iteration rocks robot-location hugs hug-count lift-location fuckedrocks beard razors)
 
 (define (world-trampoline-connections world)
  (let ((r '()))
@@ -256,6 +256,8 @@
         ((eq? char #\L) 'closed-lift)
         ((eq? char #\O) 'open-lift)
         ((eq? char #\.) 'earth)
+				((eq? char #\W) 'beard)
+				((eq? char #\!) 'razor)
         ((eq? char #\space) 'empty)
         ((member char (string->list "ABCDEFGHI")) (make-trampoline-in char #f))
         ((member char (string->list "123456789")) (make-trampoline-out char '()))
@@ -272,6 +274,8 @@
                           ((Flooding) (string->number (field-ref s 1)))
                           ((Waterproof) (string->number (field-ref s 1)))
                           ((Trampoline) (cons (car (string->list (field-ref s 1))) (car (string->list (field-ref s 3)))))
+													((Growth) (string->number (field-ref s 1)))
+													((Razors) (string->number (field-ref s 1)))
                           (else (error "Bad")))))
                        (remove (lambda (a) (equal? a "")) (cdr thelines))))
         (wwidth (apply max (map (lambda (s) (string-length s)) (car thelines))))
@@ -305,7 +309,10 @@
                (find-robot-board board)
                (find-hugs-board board)
                (count-obj-board 'hug board)
-               (find-lift-board board)))))
+               (find-lift-board board)
+							 #f
+							 (memq/default 'Growth mineinfo 0)
+							 (memq/default 'Razors mineinfo 0)))))
 
 (define (string->world string)
         (call-with-input-string string parse-input))
