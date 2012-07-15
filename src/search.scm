@@ -51,6 +51,64 @@
    (when (or (not *best-node-so-far*) (< (vector-ref min 0) (vector-ref *best-node-so-far* 0)))
     (set! *best-node-so-far* min)))))
 
+(define (get-neighbors node world)
+  (filter (list (first moves) world) (lambda (p) (not (equal? (second p) #f))) (map (lambda (move) (list move (move-robot world move))) moves)))
+
+(define (init-dist-inf world)
+  (vector-unfold (lambda (x) (list +inf.0 '())) (world-length world)))
+
+(define (min-dist-node dist unvisited)
+  (let ((get-min-dist (lambda (index best x) (if (and (not (equal? #f (memq index unvisited))) (> (first (vector-ref dist best)) (first (vector-ref dist index)))) index best))))
+     (vector-fold get-min-dist 0 dist)))
+
+(define (remove-node unvisited node)
+  (filter unvisited (lambda (p) (not (equal? p node))) unvisited))
+
+(define (dist-between evaluator world node robot-node)
+  (evaluator (list (world-ref world node) (world-ref world robot-node )) world))
+
+(define (fuckfuck dist node)
+  (first (vector-ref dist node)))
+
+(define (dijkstra evaluator world source-node)
+  (letrec ((initial-hugs (count-hugs world))
+         (dist (init-dist-inf world))
+         (evaluator1 (lambda (path world) (evaluator initial-hugs path world)))
+         (check-nodes (lambda (evaluator2 unvisited world2)
+            (if (empty? unvisited) dist
+	        (let* ((node (min-dist-node dist unvisited))
+                       (neighbors (get-neighbors node world2)))
+                  (if (equal? (first (vector-ref dist node)) +inf) dist
+                    (begin
+                      (map (lambda (candidate)
+                         (update-best! (vector (first candidate) (second candidate)))
+                         (let* ((robot-node (find-robot (second candidate)))
+                                (robot-node-index (* (first robot-node) (second robot-node)))
+                                (alt (+ (dist-between evaluator2 (second candidate) node robot-node-index)
+                                        (first (vector-ref dist node)) )))
+			      (if (< alt (first (vector-ref dist robot-node-index )))
+                                  (vector-set! dist robot-node-index (list alt (first candidate)))
+                                  '()))) neighbors)
+                  (check-nodes evaluator2 (remove-node unvisited node) world2))))))))
+        (vector-set! dist source-node (list 0 '()))
+        (check-nodes evaluator1 (unfold (lambda (p) (> p (* (board-width (world-board world)) (board-height (world-board world))))) (lambda (x) x) (lambda (x) (+ x 1)) 0) world)))
+
+;; get the next move for the min cost target
+(define (get-min-path targets)
+  (print targets)
+  (second (vector-ref targets
+                      (vector-fold (lambda (index best x)
+                        (if (> (first (vector-ref targets index)) (first (vector-ref targets best))) best index)) 0 targets))))
+
+(define (cartesian->index lst)
+   (* (first lst) (second lst)))
+
+;; compute dijkstras to get costs to go from the source node to every other node, then return the next move
+(define (best-moves3 world)
+  (let* ((source-node-index (cartesian->index (find-robot world)))
+        (target-nodes (dijkstra heuristic-world world source-node-index)))
+          (get-min-path target-nodes)))
+
 (define (update-best! world)
  (when (or (not *best-node-so-far*) (< (vector-ref world 0) (vector-ref *best-node-so-far* 0)))
   (set! *best-node-so-far* world)))
@@ -112,6 +170,9 @@
 ;;Todo: Die quickly in a hugless world
 (define (best-move world n) 
  (pairing-heap-min (best-moves heuristic-world world n #f #f)))
+
+(define (best-move-with-dijkstras world)
+   (best-moves3 world))
 
 (define (world->seen-map world)
  (map-matrix (lambda (e) +inf.0) (world-board world)))
