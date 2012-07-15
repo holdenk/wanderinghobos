@@ -57,6 +57,7 @@
    (board-height board))))
 (define (board-height board) (vector-length board))
 (define (board-width board) (vector-length (vector-ref board 0)))
+(define (board-length board) (* (board-height board) (board-width board)))
 
 (define (board-ref board x y)
  (if (or (< y 0) (< x 0) (>= y (board-height board)) (>= x (board-width board)))
@@ -69,6 +70,13 @@
 (define (board-set! board x y contents)
  (vector-set! (vector-ref board y) x contents)
  board)
+
+(define (world-ref world n)
+  (let ((b (world-board world)))
+    (board-ref b (quotient n (board-height b)) (modulo n (board-height b))))) 
+
+(define (world-length world)
+  (board-length (world-board world)))
 
 (define (robot? board x y) (equal? (board-ref board x y) 'robot))
 (define (rock? board x y) (equal? (board-ref board x y) 'rock))

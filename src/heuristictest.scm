@@ -3,7 +3,7 @@
 (declare (uses simulate))
 (declare (uses heuristic))
 (use test)
-
+;;(require-library parse-input dog simulate heuristic)
 (define world-test-1
  (string->world
   "######
@@ -144,17 +144,25 @@ L  .\\#
 	    (test 1 (- (score-world 1 (list ) heuristictestworld1)
 		  (score-world 1 (list 'left) heuristictestworld1))
 		  )
-	    (test +inf.0 (heuristic-world 1 (list ) heuristictestworldDead))
+	    (test +inf.0 (heuristic-world (score-world 1 (list ) heuristictestworldDead) 1 (list ) heuristictestworldDead))
 	    (test 75 (score-world 1 (list ) heuristictestworldNoHugsEscaped))
 	    (test 25 (score-world 1 (list ) heuristictestworldNoHugsNotEscaped))
 	    (test 50 (score-world 1 (list 'abort) heuristictestworldNoHugsNotEscaped))
 	    (test 0 (score-world 3 (list ) world-test-1))
 	    (test -1 (score-world 3 (list 'up) world-test-2))
-	    (test 2.2 (fairly-simple-heuristic-world 3 (list ) world-test-1))
-	    (test 2.1 (fairly-simple-heuristic-world 3 (list 'up) world-test-2))
-	    (test -20.7 (fairly-simple-heuristic-world 3 (list 'left) world-test-3))
-	    (test 2 (very-simple-heuristic-world 3 (list ) world-test-1))
-	    (test 2 (very-simple-heuristic-world 3 (list 'up) world-test-2))
-	    (test -21 (very-simple-heuristic-world 3 (list 'left) world-test-3))
+	    (test 24 (score-world 3 (list 'left) world-test-3))
+	    (test 3 (manhattan-dist-to-hug world-test-3))
+	    (test 2.2 (fairly-simple-heuristic-world
+		       (score-world 3 (list ') world-test-1)
+		       3 (list ) world-test-1))
+	    (test 2.1 (fairly-simple-heuristic-world 
+		       (score-world 3 (list 'up) world-test-2)
+		       3 (list 'up) world-test-2))
+	    (test -20.7 (fairly-simple-heuristic-world 
+			 (score-world 3 (list 'left) world-test-3)
+			 3 (list 'left) world-test-3))
+	    (test 2 (very-simple-heuristic-world (score-world 3 (list ) world-test-1) 3 (list ) world-test-1))
+	    (test 2 (very-simple-heuristic-world (score-world 3 (list 'up) world-test-2) 3 (list 'up) world-test-2))
+	    (test -21 (very-simple-heuristic-world (score-world 3 (list 'left) world-test-3) 3 (list 'left) world-test-3))
 
 )
