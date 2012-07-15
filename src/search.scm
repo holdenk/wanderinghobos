@@ -39,7 +39,7 @@
 (define (deal x) (n-random-elements-without-replacement (length x) x))
 
 (define moves-directions '(left right up down))
-(define moves-other '(abort wait))
+(define moves-other '(abort wait shave))
 (define moves (append moves-directions moves-other))
 
 (define *best-node-so-far* #f)
