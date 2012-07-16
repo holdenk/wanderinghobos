@@ -28,9 +28,9 @@ extern point * make_point(int x, int y);
 #define IS_CLOSED_LIFT(a) (a == 'L')
 #define IS_BEARD(a) (a == 'W')
 
-extern struct point native_execute_square(struct cboard* in,
-				   struct point pt,
-				   struct cboard* out,
+extern point native_execute_square(cboard* in,
+				   point* pt,
+				   cboard* out,
 				   int hugs,
 				   char beard);
 #endif

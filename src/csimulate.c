@@ -16,13 +16,16 @@ point * make_point(int x, int y) {
 }
 
 
-struct point native_execute_square(struct cboard* in,
-				   struct point pt,
-				   struct cboard* out,
+extern point native_execute_square(cboard* in,
+				   point* pt_in,
+				   cboard* out,
 				   int hugs,
 				   char beard)
 {
 	struct point result;
+	struct point pt;
+	pt.x = pt_in->x; pt.y = pt_in->y;
+	result.x = -1;
 	char xy = CELL_BOARDPTR(in, pt.x, pt.y);
 	int dx, dy;
 	if(IS_ROCK_LIKE(xy))
