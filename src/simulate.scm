@@ -140,7 +140,7 @@
                              (board-height board-out)
                              (board->c_board board-out))
                          nr-hugs
-                         grow-beard)))
+                         (if grow-beard 1 0))))
     (if (< (point-x result) 0) '()
         (list (point-x result) (point-y result)))))
 
