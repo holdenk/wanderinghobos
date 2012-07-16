@@ -4,6 +4,7 @@
 (declare (unit mario))
 (require-extension bind coops)
 (bind* "#include \"./csimulate.h\"")
+(bind* "#include \"./hobofloyd.h\"")
 
 ;;The default make-cboard sucks a lot and doesn't want an s8vector, it only wants strings. Which is
 ;;inconvient since like fuck that noise.
