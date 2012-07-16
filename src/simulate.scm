@@ -130,7 +130,7 @@
 (define (copy-board board) (map-matrix identity board))
 
 (define (call-native-execute-square board x y board-out nr-hugs grow-beard moving-rocks)
-  (let ((result (native-execute-square (make-board-fuck
+  (let ((result (native_execute_square (make-board-fuck
                              (board-width board)
                              (board-height board)
                              (board->c_board board))
