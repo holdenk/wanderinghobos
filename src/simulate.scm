@@ -4,6 +4,9 @@
 (declare (uses parse-input))
 (use list-utils test srfi-1 posix vector-lib sequences)
 
+;;Are we using the C code version
+(define call-c-code #t)
+
 (define (for-each-n f n)
   (let loop ((i 0)) (when (< i n) (f i) (loop (+ i 1)))))
 
