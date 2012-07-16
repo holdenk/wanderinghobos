@@ -3,7 +3,7 @@ CSCFLAGS = -O2
 CSC = csc $(CSCFLAGS)
 GCC = gcc $(GCCFLAGS)
 
-IGNORES = src/main.scm src/test-runner.scm src/loadme.scm src/play-map.scm
+IGNORES = src/main.scm src/test-runner.scm src/loadme.scm src/play-map.scm src/testffi.scm
 SOURCES = $(shell find src/ -iname \*.scm -or -iname \*.ss -or -iname \*.c)
 NONEXEC_SOURCES = $(filter-out $(IGNORES), $(SOURCES))
 TEST_FILES = $(shell find tests/ -iname \*.map)
@@ -22,6 +22,9 @@ $(PRODUCT): $(addsuffix .o, $(basename $(NONEXEC_SOURCES))) src/main.o
 	$(CSC) -o $@ $^
 
 play-map: $(addsuffix .o, $(basename $(NONEXEC_SOURCES))) src/play-map.o
+	$(CSC) -o $@ $^
+
+test-ffi: $(addsuffix .o, $(basename $(NONEXEC_SOURCES))) src/testffi.o
 	$(CSC) -o $@ $^
 
 package:

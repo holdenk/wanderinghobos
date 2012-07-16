@@ -1,10 +1,26 @@
 #include "csimulate.h"
 
-inline struct point native_execute_square(struct board* in,
-																	 struct point pt,
-																	 struct board* out,
-																	 int hugs,
-																	 char beard)
+board * make_board(int width, int height, char * tehboard) {
+  board *b = (board *)malloc (sizeof(board));
+  b->width = width;
+  b->height = height;
+  b->board = tehboard;
+  return b;
+}
+
+point * make_point(int x, int y) {
+  point *p = (point *)malloc(sizeof(point));
+  p->x = x;
+  p->y = y;
+  return p;
+}
+
+
+struct point native_execute_square(struct board* in,
+				   struct point pt,
+				   struct board* out,
+				   int hugs,
+				   char beard)
 {
 	struct point result;
 	char xy = CELL_BOARDPTR(in, pt.x, pt.y);

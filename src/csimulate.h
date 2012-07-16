@@ -6,10 +6,18 @@ struct board
 	char* board;
 };
 
+typedef struct board board;
+
+extern board * make_board(int width, int height, char * tehboard);
+
 struct point
 {
 	int x, y;
 };
+
+typedef struct point point;
+
+extern point * make_point(int x, int y);
 
 #define APT(x,y,w) (y*w+x)
 #define CELL_BOARDPTR(b,x,y) (b->board[APT(x,y,b->width)])
@@ -19,9 +27,9 @@ struct point
 #define IS_CLOSED_LIFT(a) (a == 'L')
 #define IS_BEARD(a) (a == 'W')
 
-inline struct point native_execute_square(struct board* in,
-																	 struct point pt,
-																	 struct board* out,
-																	 int hugs,
-																	 char beard);
+//extern struct point native_execute_square(struct board* in,
+//				   struct point pt,
+//				   struct board* out,
+//				   int hugs,
+//				   char beard);
 #endif
