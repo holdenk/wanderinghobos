@@ -1,6 +1,6 @@
 #include "csimulate.h"
 
-cboard * make_board(int width, int height, signed char * tehboard) {
+cboard * make_board(int width, int height, char * tehboard) {
   cboard *b = (cboard *)malloc (sizeof(cboard));
   b->width = width;
   b->height = height;
@@ -28,52 +28,52 @@ extern point* native_execute_square(cboard* in,
 	result->x = -1;
 	char xy = CELL_BOARDPTR(in, pt.x, pt.y);
 	int dx, dy;
-	if(IS_ROCK_LIKE(xy))
-		{
-			if(IS_EMPTY(CELL_BOARDPTR(in,pt.x,pt.y-1)))
-				{
+	if(IS_ROCK_LIKE(xy)) {
+      if (IS_EMPTY(CELL_BOARDPTR(in,pt.x,pt.y-1))) {
 					CELL_BOARDPTR(out,pt.x,pt.y) = ' ';
 					CELL_BOARDPTR(out,pt.x,pt.y-1) = xy;
 					result->x = pt.x;
 					result->y = pt.y-1;
-				}
-			else if(IS_ROCK_LIKE(CELL_BOARDPTR(in,pt.x,pt.y-1))
+			} else if (IS_ROCK_LIKE(CELL_BOARDPTR(in,pt.x,pt.y-1))
 							&& IS_EMPTY(CELL_BOARDPTR(in,pt.x+1,pt.y))
-							&& IS_EMPTY(CELL_BOARDPTR(in,pt.x+1,pt.y-1)))
-				{
-					CELL_BOARDPTR(out,pt.x+1,pt.y-1) = xy;
+							&& IS_EMPTY(CELL_BOARDPTR(in,pt.x+1,pt.y-1))) {
 					CELL_BOARDPTR(out,pt.x,pt.y) = ' ';
+					CELL_BOARDPTR(out,pt.x+1,pt.y-1) = xy;
 					result->x = pt.x + 1;
 					result->y = pt.y - 1;
-				}
-			else if(IS_HUG(CELL_BOARDPTR(in,pt.x,(pt.y-1)))
+			} else if (IS_ROCK_LIKE(CELL_BOARDPTR(in,pt.x,pt.y-1))
+							&& ((((pt.x+1 < in->width) && (pt.y < in->height)) && !IS_EMPTY(CELL_BOARDPTR(in,pt.x+1,pt.y)))
+							    || (((pt.x+1 < in->width) && (pt.y < in->height)) && !IS_EMPTY(CELL_BOARDPTR(in,pt.x+1,pt.y-1))))
+							&& (IS_EMPTY(CELL_BOARDPTR(in, pt.x-1, pt.y)))
+							&& (IS_EMPTY(CELL_BOARDPTR(in, pt.x-1, pt.y-1)))) {
+					CELL_BOARDPTR(out,pt.x,pt.y) = ' ';
+					CELL_BOARDPTR(out,pt.x-1,pt.y-1) = xy;
+					result->x = pt.x - 1;
+					result->y = pt.y - 1;
+			} else if (IS_HUG(CELL_BOARDPTR(in,pt.x,(pt.y-1)))
 							&& IS_EMPTY(CELL_BOARDPTR(in,pt.x+1,pt.y))
-							&& IS_EMPTY(CELL_BOARDPTR(in,pt.x+1,pt.y-1)))
-				{
+							&& IS_EMPTY(CELL_BOARDPTR(in,pt.x+1,pt.y-1))) {
 					CELL_BOARDPTR(out,pt.x,pt.y) = ' ';
 					CELL_BOARDPTR(out,pt.x+1,pt.y-1) = xy;
+					result->x = pt.x + 1;
+					result->y = pt.y - 1;
 					//TODO: Append to list of moving rocks
-				}
-		}
-	else if(IS_CLOSED_LIFT(xy) && hugs == 0)
-		{
+			} else {
+					CELL_BOARDPTR(out,pt.x,pt.y) = xy;
+      }
+	} else if (IS_CLOSED_LIFT(xy) && hugs == 0) {
 			CELL_BOARDPTR(out,pt.x,pt.y) = 'O';
-		}
-	else if(IS_BEARD(xy) && beard != 0)
-		{
+	} else if (IS_BEARD(xy) && beard != 0) {
 			for(dx = -1; dx <= 1; ++dx)
-				for(dy = -1; dy <= 1; ++dy)
-					{
+				for(dy = -1; dy <= 1; ++dy) {
 						if(dx == pt.x && dy == pt.y) continue;
 
-						if(IS_EMPTY(CELL_BOARDPTR(in,dx,dy)))
-							CELL_BOARDPTR(out,dx,dy) = 'W';
-					}
-		}
-	else if(IS_EMPTY(CELL_BOARDPTR(in,pt.x,pt.y)))
-		{
-			CELL_BOARDPTR(out,pt.x,pt.x) = xy;
-		}
+						if(IS_EMPTY(CELL_BOARDPTR(in, pt.x+dx, pt.y+dy)))
+							CELL_BOARDPTR(out, pt.x+dx, pt.y+dy) = 'W';
+				}
+	} else if (IS_EMPTY(CELL_BOARDPTR(in,pt.x,pt.y))) {
+      CELL_BOARDPTR(out,pt.x,pt.x) = xy;
+	}
 	return result;
 }
 

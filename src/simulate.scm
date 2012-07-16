@@ -24,15 +24,22 @@
     u))
 
 (define (board->c_board board)
-  (let ((s8vec (make-s8vector (board-length board))))
+  (let ((u8vec (make-u8vector (board-length board))))
       (for-each-board-index
           (lambda (x y)
-              (s8vector-set! s8vec (* x y) (char->integer (first (string->list (symbol->string (board-ref board x y))))))) board)
-  s8vec))
+              (u8vector-set! u8vec (+ x (* y (board-height board))) (char->integer (symbol-to-char (board-ref board x y))))) board)
+  u8vec))
+
 
 (define (c_board->board cboard width height)
   (let ((new-board (make-vector height)))
-      (for-each-n (lambda (i) (vector-set! new-board i (make-vector width))) height)
+      (for-each-n (lambda (i)
+                      (vector-set! new-board i (make-vector width)) 
+                      (for-each-n (lambda (j)
+                                    (vector-set!
+                                      (vector-ref new-board i)
+                                      j
+                                      (convert-char-to-symbol (string-ref (cboard-board cboard) (+ j (* i height)) )))) width)) height)
       new-board))
 
 (define (const a) (lambda _ a))

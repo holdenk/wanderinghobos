@@ -248,6 +248,22 @@
   (lambda (i count v) (+ count (vector-count (lambda (i e) (eq? obj e)) v)))
   0 (world-board world)))
 
+(define (convert-char-to-symbol char)
+  (cond ((eq? char #\R) 'robot)
+        ((eq? char #\#) 'wall)
+        ((eq? char #\*) 'rock)
+        ((eq? char #\\) 'hug) ;;Fuck calling this shit a Lambda
+        ((eq? char #\L) 'closed-lift)
+        ((eq? char #\O) 'open-lift)
+        ((eq? char #\.) 'earth)
+				((eq? char #\W) 'beard)
+				((eq? char #\!) 'razor)
+				((eq? char #\@) 'horock)
+        ((eq? char #\space) 'empty)
+        ((member char (string->list "ABCDEFGHI")) (make-trampoline-in char #f))
+        ((member char (string->list "123456789")) (make-trampoline-out char '()))
+        (else (fatal char))))
+
 (define (parse-input . port)
  (define (convert-to-symbol char)
   (cond ((eq? char #\R) 'robot)
