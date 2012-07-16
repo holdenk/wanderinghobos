@@ -48,7 +48,7 @@ clean:
 	$(CSC) -c $<
 
 %.o: %.c
-	$(GCC) -c $<
+	$(GCC) -c $< -o $@
 
 #### TEST CASES ####
 

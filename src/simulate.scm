@@ -122,22 +122,6 @@
 
 (define (copy-board board) (map-matrix identity board))
 
-#>
-char** execute_square(char * board_in, int width, int height, int x, int y,
-                   char * board_out, int nr_hugs, char grow_beard) {
-   struct board in; struct board out;
-   struct point pt; struct point out_pt;
-   in.board = board_in;
-   in.width = width; in.height = height;
-   pt.x = x; pt.y = y;
-   out_pt = native_execute_square(&in, pt, &out, nr_hugs, grow_beard);
-   char** wrapper = malloc(3);
-   wrapper[0] = (char)out_pt.x;
-   wrapper[1] = (char)out_pt.y;
-}
-<#
-
-
 (define (execute-square board x y board-out nr-hugs grow-beard moving-rocks)
   (let ((xy (board-ref-unchecked board x y)))
     (cond ((is-rock-like? xy)
