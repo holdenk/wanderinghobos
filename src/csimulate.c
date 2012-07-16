@@ -75,10 +75,10 @@ point * real_native_execute_square(cboard* in,
 				   int beard,
 				   int reversedX)
 {
-	struct point result;
+	struct point* result = (point*) malloc(sizeof(point));
 	struct point pt;
 	pt.x = pt_in->x; pt.y = pt_in->y;
-	result.x = -1;
+	result->x = -1;
 	char xy = CELL_BOARDPTR(in, pt.x, pt.y);
 	int dx, dy;
 	if(IS_ROCK_LIKE(xy))
@@ -87,8 +87,8 @@ point * real_native_execute_square(cboard* in,
 				{
 				  CELL_BOARDPTR(out,pt.x,pt.y) = ' ';
 					CELL_BOARDPTR(out,pt.x,pt.y-1) = xy;
-					result.x = pt.x;
-					result.y = pt.y-1;
+					result->x = pt.x;
+					result->y = pt.y-1;
 				}
 			else if(IS_ROCK_LIKE(CELL_BOARDPTR(in,pt.x,pt.y-1))
 							&& IS_EMPTY(CELL_BOARDPTR(in,pt.x+1,pt.y))
@@ -96,8 +96,8 @@ point * real_native_execute_square(cboard* in,
 				{
 					CELL_BOARDPTR(out,pt.x+1,pt.y-1) = xy;
 					CELL_BOARDPTR(out,pt.x,pt.y) = ' ';
-					result.x = pt.x + 1;
-					result.y = pt.y - 1;
+					result->x = pt.x + 1;
+					result->y = pt.y - 1;
 				}
 			else if(IS_HUG(CELL_BOARDPTR(in,pt.x,(pt.y-1)))
 							&& IS_EMPTY(CELL_BOARDPTR(in,pt.x+1,pt.y))
@@ -127,6 +127,7 @@ point * real_native_execute_square(cboard* in,
 		{
 			CELL_BOARDPTR(out,pt.x,pt.x) = xy;
 		}
+	return result;
 }
 
 point * native_execute_square(cboard * in,

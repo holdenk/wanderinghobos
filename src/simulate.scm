@@ -30,6 +30,11 @@
               (s8vector-set! s8vec (* x y) (char->integer (first (string->list (symbol->string (board-ref board x y))))))) board)
   s8vec))
 
+(define (c_board->board cboard width height)
+  (let ((new-board (make-vector height)))
+      (for-each-n (lambda (i) (vector-set! new-board i (make-vector width))) height)
+      new-board))
+
 (define (const a) (lambda _ a))
 
 (define (map-matrix f m) (map-vector (lambda (v) (map-vector f v)) m))
@@ -130,17 +135,19 @@
 (define (copy-board board) (map-matrix identity board))
 
 (define (call-native-execute-square board x y board-out nr-hugs grow-beard moving-rocks)
-  (let ((result (native_execute_square (make-board-fuck
+  (let* ((c_board_out (make-board-fuck
+                      (board-width board-out)
+                      (board-height board-out)
+                      (board->c_board board-out)))
+        (result (native_execute_square (make-board-fuck
                              (board-width board)
                              (board-height board)
                              (board->c_board board))
                          (make-point x y)
-                         (make-board-fuck
-                             (board-width board-out)
-                             (board-height board-out)
-                             (board->c_board board-out))
+                         c_board_out
                          nr-hugs
-                         grow-beard)))
+                         (if grow-beard 1 0))))
+    (set! board-out (c_board->board c_board_out (board-width board-out) (board-height board-out)))
     (if (< (point-x result) 0) '()
         (list (point-x result) (point-y result)))))
 

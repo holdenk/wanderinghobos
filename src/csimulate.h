@@ -69,7 +69,6 @@ extern point * native_execute_square(cboard* in,
 				   cboard* out,
 				   int hugs,
 				   int beard);
-
 extern sim_board_info * native_simulate_board(cboard *in, cboard *out, int nr_hugs, int grow_beard);
 
 #endif
