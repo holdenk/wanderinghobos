@@ -1,9 +1,10 @@
 CSCFLAGS = -O2 
 # -O4 -optimize-leaf-routines -u -unboxing  -no-argc-checks -no-bound-checks -no-procedure-checks -local
 CSC = csc $(CSCFLAGS)
+GCC = gcc $(GCCFLAGS)
 
 IGNORES = src/main.scm src/test-runner.scm src/loadme.scm src/play-map.scm
-SOURCES = $(shell find src/ -iname \*.scm -or -iname \*.ss)
+SOURCES = $(shell find src/ -iname \*.scm -or -iname \*.ss -or -iname \*.c)
 NONEXEC_SOURCES = $(filter-out $(IGNORES), $(SOURCES))
 TEST_FILES = $(shell find tests/ -iname \*.map)
 
@@ -45,6 +46,9 @@ clean:
 
 %.o: %.ss
 	$(CSC) -c $<
+
+%.o: %.c
+	$(GCC) -c $<
 
 #### TEST CASES ####
 
