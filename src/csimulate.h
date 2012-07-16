@@ -56,8 +56,8 @@ extern cworld * make_cworld(cboard* board, int water, int flooding, int waterpro
 
 extern point * make_point(int x, int y);
 
-#define APT(x,y,w) (y*w+x)
-#define CELL_BOARDPTR(b,x,y) (b->board[APT(x,y,b->width)])
+#define APT(x,y,h) (y*h+x)
+#define CELL_BOARDPTR(b,x,y) (b->board[APT(x,y,b->height)])
 #define IS_ROCK_LIKE(a) (a == '*' || a == '@')
 #define IS_EMPTY(a) (a == ' ')
 #define IS_HUG(a) (a == '\\')

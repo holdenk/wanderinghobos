@@ -9,10 +9,13 @@
 	    (test 2 (point-y 1x2))
 	    )
 ;;Make a board
-(define test-board
-        (make-board-fuck 1 2 (board->c_board (world-board (file->world "tests/contest1.map")))))
+(define test-board (world-board (file->world "tests/contest1.map")))
+(define test-cboard
+        (make-board-fuck (board-width test-board) (board-height test-board) (board->c_board test-board)))
 (test-group "board"
-      (test 1 (cboard-width test-board))
-      (test 2 (cboard-height test-board))
+      (test (board-width test-board) (cboard-width test-cboard))
+      (test (board-height test-board) (cboard-height test-cboard))
+      (test "#######. *R##  \\.##\\ * #L  .\\#######" (cboard-board test-cboard))
+      (test  test-board (c_board->board (cboard-board test-cboard) 6 4))
 )
 (display "yay")
