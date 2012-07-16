@@ -1,15 +1,16 @@
+#include <stdint.h>
 #ifndef C_SIMULATE_H
 #define C_SIMULATE_H
 
 struct cboard
 {
 	int width, height;
-	char* board;
+	uint8_t* board;
 };
 
 typedef struct cboard cboard;
 
-extern cboard * make_board(int width, int height, signed char * tehboard);
+extern cboard * make_board(int width, int height, uint8_t * tehboard);
 
 struct point
 {

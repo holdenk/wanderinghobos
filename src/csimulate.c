@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include "csimulate.h"
 
 #define NULL 0
@@ -53,7 +54,7 @@ void * native_simulate_world(cworld* in, cworld* out) {
   //TODO
 }
 
-cboard * make_board(int width, int height, signed char * tehboard) {
+cboard * make_board(int width, int height, uint8_t * tehboard) {
   cboard *b = (cboard *)malloc (sizeof(cboard));
   b->width = width;
   b->height = height;
