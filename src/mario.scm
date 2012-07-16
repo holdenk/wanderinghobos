@@ -4,3 +4,5 @@
 (declare (unit mario))
 (require-extension bind coops)
 (bind* "#include \"./csimulate.h\"")
+
+(define make-board-fuck (foreign-lambda c-pointer "make_board" integer integer s8vector))

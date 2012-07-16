@@ -1,7 +1,7 @@
 #include "csimulate.h"
 
-board * make_board(int width, int height, signed char * tehboard) {
-  board *b = (board *)malloc (sizeof(board));
+cboard * make_board(int width, int height, signed char * tehboard) {
+  cboard *b = (cboard *)malloc (sizeof(cboard));
   b->width = width;
   b->height = height;
   b->board = tehboard;
@@ -16,9 +16,9 @@ point * make_point(int x, int y) {
 }
 
 
-struct point native_execute_square(struct board* in,
+struct point native_execute_square(struct cboard* in,
 				   struct point pt,
-				   struct board* out,
+				   struct cboard* out,
 				   int hugs,
 				   char beard)
 {
@@ -74,9 +74,9 @@ struct point native_execute_square(struct board* in,
 }
 
 /*
-int simulate_board(struct board* b, int hugs, char beard)
+int simulate_board(struct cboard* b, int hugs, char beard)
 {
-	struct board newboard;
+	struct cboard newboard;
 	newboard.board = malloc(b.width*b.height);
 
 	if(newboard.board == 0) return -1;

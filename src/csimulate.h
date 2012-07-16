@@ -1,15 +1,15 @@
 #ifndef C_SIMULATE_H
 #define C_SIMULATE_H
 
-struct board
+struct cboard
 {
 	int width, height;
 	char* board;
 };
 
-typedef struct board board;
+typedef struct cboard cboard;
 
-extern board * make_board(int width, int height, signed char * tehboard);
+extern cboard * make_board(int width, int height, signed char * tehboard);
 
 struct point
 {
@@ -28,9 +28,9 @@ extern point * make_point(int x, int y);
 #define IS_CLOSED_LIFT(a) (a == 'L')
 #define IS_BEARD(a) (a == 'W')
 
-extern struct point native_execute_square(struct board* in,
+extern struct point native_execute_square(struct cboard* in,
 				   struct point pt,
-				   struct board* out,
+				   struct cboard* out,
 				   int hugs,
 				   char beard);
 #endif

@@ -10,9 +10,9 @@
 	    )
 ;;Make a board
 (define test-board
-        (make-board 1 2 (board->c_board (world-board (file->world "tests/contest1.map")))))
+        (make-board-fuck 1 2 (board->c_board (world-board (file->world "tests/contest1.map")))))
 (test-group "board"
-      (test 1 (board-width test-board))
-      (test 2 (board-height test-board))
+      (test 1 (cboard-width test-board))
+      (test 2 (cboard-height test-board))
 )
 (display "yay")
