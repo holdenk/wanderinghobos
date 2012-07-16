@@ -251,7 +251,11 @@
                 (world-lift-location world)
                 (world-fuckedrocks world)
                 (world-beard world)
-                (world-razors world))))
+                (+ (world-razors world)
+                   (- (count-obj-board 'razor
+                                       (world-board world))
+                      (count-obj-board 'razor
+                                       (car new-board)))))))
 
 (define (i-am-dead? world)
   (let ((robot (find-robot world)))
@@ -324,7 +328,7 @@
                 (dxy (board-ref board d-x d-y)))
            (define (move-it)
              (board-set! (board-set! (copy-board board) d-x d-y 'robot) l-x l-y 'empty))
-           (cond ((and dxy (member dxy '(hug empty open-lift earth)))
+           (cond ((and dxy (member dxy '(hug empty open-lift earth razor)))
                   (list (move-it) (list d-x d-y) #f))
                  ((equal? dxy 'trampoline-in)
                   (let ((f (find-anus-for-mouth board (vector-ref dxy 1))))
