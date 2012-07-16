@@ -1,6 +1,6 @@
 #include "csimulate.h"
 
-board * make_board(int width, int height, char * tehboard) {
+board * make_board(int width, int height, signed char * tehboard) {
   board *b = (board *)malloc (sizeof(board));
   b->width = width;
   b->height = height;

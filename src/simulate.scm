@@ -1,8 +1,8 @@
 ; -*- indent-tabs-mode: nil -*- ;
 (declare (unit simulate))
 
-(declare (uses parse-input))
-(use list-utils test srfi-1 posix vector-lib sequences)
+(declare (uses parse-input mario))
+(use list-utils test srfi-1 posix vector-lib sequences srfi-4)
 
 ;;Are we using the C code version
 (define call-c-code #t)
@@ -22,6 +22,13 @@
     (for-each-n (lambda (i) (vector-set! u i (f (vector-ref v i))))
                 (vector-length v))
     u))
+
+(define (board->c_board board)
+  (let ((s8vec (make-s8vector (board-length board))))
+      (for-each-board-index
+          (lambda (x y)
+              (s8vector-set! s8vec (* x y) (char->integer (first (string->list (symbol->string (board-ref board x y))))))) board)
+  s8vec))
 
 (define (const a) (lambda _ a))
 
@@ -121,6 +128,14 @@
      #f)))
 
 (define (copy-board board) (map-matrix identity board))
+
+(define (call-native-execute-square board x y board-out nr-hugs grow-beard moving-rocks)
+  (native-execute-square (make-board (board-width board) (board-height board) board)
+                         (make-point x y)
+                         (make-board (board-width board-out) (board-height board-out) board-out)
+                         nr-hugs
+                         grow-beard))
+
 
 (define (execute-square board x y board-out nr-hugs grow-beard moving-rocks)
   (let ((xy (board-ref-unchecked board x y)))

@@ -8,4 +8,11 @@
 	    (test 1 (point-x 1x2))
 	    (test 2 (point-y 1x2))
 	    )
+;;Make a board
+(define test-board
+        (make-board 1 2 (board->c_board (world-board (file->world "tests/contest1.map")))))
+(test-group "board"
+      (test 1 (board-width test-board))
+      (test 2 (board-height test-board))
+)
 (display "yay")
