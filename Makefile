@@ -32,7 +32,8 @@ package:
 	vagrant ssh -c "cd src; make clean lifter"
 	tar czf icfp-$(TEAM_NUM).tgz $(PRODUCT) $(SOURCES) $(STATIC)
 
-test: $(PRODUCT) $(addprefix test-results/, $(addsuffix .result, $(TEST_CASES))) test-results/simulate-tests
+#test: $(PRODUCT) $(addprefix test-results/, $(addsuffix .result, $(TEST_CASES))) test-results/simulate-tests
+test: test-results/simulate-tests
 
 test-runner: $(addsuffix .o, $(basename $(NONEXEC_SOURCES))) src/test-runner.o
 	$(CSC) -o $@ $^
